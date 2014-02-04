@@ -18,7 +18,7 @@ function output_data = Filtering( input_data, i, filter_type, parameters )
             if strcmp(namen,'pospesek')==1 && isempty(firstRun_a)
                 firstRun_a = 0;
                 %kovarianca šuma procesa (manjše kot je, bolj zaupamo sistemu)
-                Q_a = 0.0005;
+                Q_a = 0.1;
 
                 R_a = varianca     
             end

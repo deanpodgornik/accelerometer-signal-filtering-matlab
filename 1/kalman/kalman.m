@@ -1,8 +1,11 @@
 %preberem csv datoteko
-data = csvread('../../data/asus_50_game_hitro.csv');
+data = csvread('../../data/asus_50_povratna.csv');
 data(:,4)=[];
 %upoštevam samo acceleracijo po x-osi
 data = data(:,1);
+
+prag_pospesek = 0.08;
+prag_hitrost = 0.08;
 
 source = data;
 varianca_a = var(source);
@@ -32,6 +35,10 @@ for i=1:data_length
     else
         filteredData(i) = 0;
     end
+    %raw filtering
+    if(abs(filteredData(i))<prag_pospesek)
+        filteredData(i) = 0;
+    end
     
     %integracija - hitrost
     if(i-1>0)
@@ -42,6 +49,10 @@ for i=1:data_length
         %hitrost(i) = Filtering(hitrost_raw, i, 'kalman', {varianca_h, 'hitrost'}) + 0.06;  
     else
         hitrost_raw(i) = 0;
+        hitrost(i) = 0;
+    end
+    %raw filtering
+    if(abs(hitrost(i))<prag_hitrost)
         hitrost(i) = 0;
     end
 
@@ -75,6 +86,7 @@ hold off;
 subplot(3,1,2);
 %plot(x, hitrost_raw, 'color', 'red');
 hold on;
+plot(x, hitrost_raw, 'color', 'red');
 plot(x, hitrost, 'color', 'blue');
 legend('hitrost');
 hold off;
