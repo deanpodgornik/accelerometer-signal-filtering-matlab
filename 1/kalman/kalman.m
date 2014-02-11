@@ -1,16 +1,27 @@
 %preberem csv datoteko
-data = csvread('../../data/asus_50_povratna.csv');
-data(:,4)=[];
+%data = csvread('../../data/samsung_50_povratna_v2.csv');
+%data = csvread('../../data/samsung_50_2_enosmerna.csv');
+%data = csvread('../../data/samsung_50_dve_smeri.csv');
+%data = csvread('../../data/samsung_50_v_roki.csv');
+%data = csvread('../../data/asus_50_povratna.csv');
+%data = csvread('../../data/samsung_-1+0.5+0.5.csv');
+%data = csvread('../../data/samsung_-0.5-0.5+0.5+0.5.csv');
+data = csvread('../../data/samsung_roka_-1+0.5+0.5.csv');
+
 %upoštevam samo acceleracijo po x-osi
 data = data(:,1);
 
-prag_pospesek = 0.08;
-prag_hitrost = 0.08;
+%debugging
+%data = removerows(data,'ind',1:150);
+
+prag_pospesek = 0.8;
+prag_hitrost = 0.03;
+
+fistRun_hitrost = 1;
 
 source = data;
 varianca_a = var(source);
 varianca_h = var(source);
-varianca_p = 0.0054;
 data_length = length(source);
 
 %inicializacija
@@ -45,16 +56,15 @@ for i=1:data_length
         hitrost_raw(i) = hitrost_raw(i-1) + Integration_step(filteredData,i,freq,'trapez');
         
         %filtriranje
-        hitrost(i) = hitrost_raw(i); %brez filtriranja
-        %hitrost(i) = Filtering(hitrost_raw, i, 'kalman', {varianca_h, 'hitrost'}) + 0.06;  
+        %hitrost(i) = hitrost_raw(i); %brez filtriranja
+        hitrost(i) = Filtering(hitrost_raw, i, 'kalman', {varianca_h, 'hitrost'});  
     else
         hitrost_raw(i) = 0;
         hitrost(i) = 0;
     end
-    %raw filtering
-    if(abs(hitrost(i))<prag_hitrost)
-        hitrost(i) = 0;
-    end
+    %popravek filtriranja
+    [nova_hitrost fistRun_hitrost] =  Popravek_filtra(hitrost, i, fistRun_hitrost);
+    hitrost(i) = nova_hitrost;
 
     %integracija - pozicija
     if(i-1>0)
@@ -67,10 +77,10 @@ for i=1:data_length
         pozicija_raw(i) = 0;
         pozicija(i) = 0;
     end
+    
+    %popravek pozicije na podlagi kalibracije
+    pozicija(i) = pozicija(i) * 18;
 end
-
-%IIR
-%filteredData = IIR2(source);
 
 %pospešek
 x = 1:data_length;
@@ -88,11 +98,10 @@ subplot(3,1,2);
 hold on;
 plot(x, hitrost_raw, 'color', 'red');
 plot(x, hitrost, 'color', 'blue');
-legend('hitrost');
+legend('hitrost NE-filtrirana','hitrost filtrirana');
 hold off;
 
 %pozicija
 subplot(3,1,3);
 plot(x, pozicija, 'color', 'blue');
 legend('pozicija');
-

@@ -6,29 +6,30 @@ function output_data = Filtering( input_data, i, filter_type, parameters )
     persistent firstRun_h A_h H_h Q_h R_h x_h P_h xp_h Pp_h K_h;
     persistent firstRun_p A_p H_p Q_p R_p x_p P_p xp_p Pp_p K_p;
 
-    
-
     switch filter_type
         case 'kalman'
             %Kalman filter   
             
-            varianca = cell2mat(parameters(1))
-            namen = parameters{2}
+            varianca = cell2mat(parameters(1));
+            namen = parameters{2};
             
             if strcmp(namen,'pospesek')==1 && isempty(firstRun_a)
                 firstRun_a = 0;
-                %kovarianca šuma procesa (manjše kot je, bolj zaupamo sistemu)
-                Q_a = 0.1;
-
-                R_a = varianca     
+                %kovarianca šuma procesa (manjše kot je, bolj zaupamo merilnemu sistemu)
+                %manjše kot je bolj je funkcija  blizu 0
+                %Q_a = 0.00003;
+                Q_a = 0.005;
+                
+                R_a = varianca;
             end
 
             if strcmp(namen,'hitrost')==1 && isempty(firstRun_h)
                 firstRun_h = 0;
-                %kovarianca šuma procesa (manjše kot je, bolj zaupamo sistemu)
-                Q_h = 0.00005;
+                %kovarianca šuma procesa (manjše kot je, bolj zaupamo merilnemu sistemu)
+                %manjše kot je bolj je funkcija  blizu 0
+                Q_h = 0.1;
 
-                R_h = varianca 
+                R_h = varianca;
             end
 
             if strcmp(namen,'pozicija')==1 && isempty(firstRun_p)
