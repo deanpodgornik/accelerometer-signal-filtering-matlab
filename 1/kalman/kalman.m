@@ -10,7 +10,12 @@
 %data = csvread('../../data/samsung_raw_acceleration.csv');
 %data = csvread('../../data/asus-1+05+05.csv');
 %data = csvread('../../data/asus_-1+1.csv');
-data = csvread('../../data/asus_roka-1+1.csv');
+%data = csvread('../../data/asus_roka-1+1.csv');
+%data = csvread('../../data/asus_triangle_-1+05+05.csv');
+%data = csvread('../../data/zacetek_vertikala.csv');
+%data = csvread('../../data/asus_pol_test.csv');
+%data = csvread('../../data/asus_L_test.csv');
+data = csvread('../../data/asus_dvojnitrikotnik05.csv');
 
 %upoštevam samo acceleracijo po x-osi
 data = data(:,1);

@@ -20,7 +20,7 @@ function [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftere
         else
             %prišlo je do spremembe smeri (zatrem zadevo => podatek
             %postavim na 0)
-            nova_vrednost = 0;
+            nova_vrednost = vhodni_podatek * (-1);
         end
     end
 end
