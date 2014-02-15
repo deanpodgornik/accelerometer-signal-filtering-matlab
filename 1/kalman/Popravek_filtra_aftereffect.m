@@ -1,4 +1,4 @@
-function [nova_vrednost, firstRun] = Popravek_filtra( data, i, firstRun )
+function [nova_vrednost, firstRun] = Popravek_filtra_aftereffect( data, i, firstRun )
     persistent ponavljajoca_vrednost;
     persistent st_ponavljanja;
     persistent popravek;
@@ -13,12 +13,7 @@ function [nova_vrednost, firstRun] = Popravek_filtra( data, i, firstRun )
     end
     
     %preverim ali je na voljo nova ponavljajoèa vrednost
-    test = data(i);
-    test_all = data;
     [data(i) ponavljajoca_vrednost]
-    
-    test1 = abs(data(i) - ponavljajoca_vrednost);
-    test2 = eps(data(i));
     
     if abs(data(i) - ponavljajoca_vrednost) < 0.0001
         %equal

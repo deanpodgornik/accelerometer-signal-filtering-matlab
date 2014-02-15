@@ -7,13 +7,17 @@
 %data = csvread('../../data/samsung_-1+0.5+0.5.csv');
 %data = csvread('../../data/samsung_-0.5-0.5+0.5+0.5.csv');
 %data = csvread('../../data/samsung_h_-1+0.5+0.5.csv');
-data = csvread('../../data/samsung_raw_acceleration.csv');
+%data = csvread('../../data/samsung_raw_acceleration.csv');
+%data = csvread('../../data/asus-1+05+05.csv');
+%data = csvread('../../data/asus_-1+1.csv');
+data = csvread('../../data/asus_roka-1+1.csv');
 
 %upoštevam samo acceleracijo po x-osi
 data = data(:,1);
 
 %debugging
-%data = removerows(data,'ind',1:150);
+%data = removerows(data,'ind',1500:3500);
+%data = removerows(data,'ind',1:800);
 
 prag_pospesek = 0.8;
 prag_hitrost = 0.03;
@@ -39,18 +43,14 @@ pozicija_raw = zeros(length(filteredData),1);
 
 %èasovni interval
 %t = 0.02; %game
-t = 0.01; %fastest 
+%t = 0.01; %fastest samsung
+t = 0.005; %fastest asus
 freq = 1 / t; %50Hz
 
 gravity = 0;
 
 %iterator (real-time simulator)
 for i=1:data_length
-    %retrieving linear acceleration
-    alpha = 0.8;
-    gravity = alpha * gravity + (1 - alpha) * raw_acceleration(i);
-    linear_acceleration = raw_acceleration(i) - gravity;
-    source(i) = linear_acceleration;
     
     %filtering linear acceleration
     if(i-1>0)
@@ -68,14 +68,14 @@ for i=1:data_length
         hitrost_raw(i) = hitrost_raw(i-1) + Integration_step(filteredData,i,freq,'trapez');
         
         %filtriranje
-        %hitrost(i) = hitrost_raw(i); %brez filtriranja
-        hitrost(i) = Filtering(hitrost_raw, i, 'kalman', {varianca_h, 'hitrost'});  
+        hitrost(i) = hitrost_raw(i); %brez filtriranja
+        %hitrost(i) = Filtering(hitrost_raw, i, 'kalman', {varianca_h, 'hitrost'});  
     else
         hitrost_raw(i) = 0;
         hitrost(i) = 0;
     end
     %popravek filtriranja
-    [nova_hitrost fistRun_hitrost] =  Popravek_filtra(hitrost, i, fistRun_hitrost);
+    [nova_hitrost fistRun_hitrost] =  Popravek_hitrosti(hitrost, i, fistRun_hitrost);
     hitrost(i) = nova_hitrost;
 
     %integracija - pozicija
@@ -91,7 +91,7 @@ for i=1:data_length
     end
     
     %popravek pozicije na podlagi kalibracije
-    pozicija(i) = pozicija(i) * 18;
+    %pozicija(i) = pozicija(i) * 18;
 end
 
 %pospešek

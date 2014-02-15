@@ -1,22 +1,30 @@
 %preberem csv datoteko
 %data = csvread('../../data/samsung_50_povratna_v2.csv');
 %data = csvread('../../data/samsung_50_2_enosmerna.csv');
-%data = csvread('../../data/asus_50_povratna.csv');
-data = csvread('../../data/samsung_50_dve_smeri.csv');
+%data = csvread('../../data/samsung_50_dve_smeri.csv');
 %data = csvread('../../data/samsung_50_v_roki.csv');
-data(:,4)=[];
+%data = csvread('../../data/asus_50_povratna.csv');
+%data = csvread('../../data/samsung_-1+0.5+0.5.csv');
+%data = csvread('../../data/samsung_-0.5-0.5+0.5+0.5.csv');
+%data = csvread('../../data/samsung_h_-1+0.5+0.5.csv');
+%data = csvread('../../data/samsung_raw_acceleration.csv');
+data = csvread('../../data/asus-1+05+05.csv');
+
 %upoštevam samo acceleracijo po x-osi
 data = data(:,1);
 
-prag_pospesek = 0.08;
+%debugging
+%data = removerows(data,'ind',1:150);
+
+prag_pospesek = 0.8;
 prag_hitrost = 0.03;
 
 fistRun_hitrost = 1;
 
 source = data;
+raw_acceleration = data;
 varianca_a = var(source);
 varianca_h = var(source);
-varianca_p = 0.0074;
 data_length = length(source);
 
 %inicializacija
@@ -31,11 +39,17 @@ pozicija = zeros(length(filteredData),1); %po drugi integraciji pa dobim pozicij
 pozicija_raw = zeros(length(filteredData),1);
 
 %èasovni interval
-t = 0.02; %game 
+%t = 0.02; %game
+%t = 0.01; %fastest samsung
+t = 0.005; %fastest samsung
 freq = 1 / t; %50Hz
+
+gravity = 0;
 
 %iterator (real-time simulator)
 for i=1:data_length
+    
+    %filtering linear acceleration
     if(i-1>0)
         filteredData(i) = Filtering(source, i, 'kalman', {varianca_a, 'pospesek'});      
     else
@@ -58,9 +72,8 @@ for i=1:data_length
         hitrost(i) = 0;
     end
     %popravek filtriranja
-    tmp_rez =  Popravek_filtra(hitrost, i);
-    hitrost(i) = tmp_rez(1);
-    
+    [nova_hitrost fistRun_hitrost] =  Popravek_filtra(hitrost, i, fistRun_hitrost);
+    hitrost(i) = nova_hitrost;
 
     %integracija - pozicija
     if(i-1>0)
