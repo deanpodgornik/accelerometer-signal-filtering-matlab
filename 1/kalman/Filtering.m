@@ -18,7 +18,7 @@ function output_data = Filtering( input_data, i, filter_type, parameters )
                 %kovarianca šuma procesa (manjše kot je, bolj zaupamo merilnemu sistemu)
                 %manjše kot je bolj je funkcija  blizu 0
                 %Q_a = 0.00003;
-                Q_a = 0.006;
+                Q_a = 0.006; %working
                 
                 R_a = varianca;
             end

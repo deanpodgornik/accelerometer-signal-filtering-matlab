@@ -14,8 +14,13 @@
 %data = csvread('../../data/asus_triangle_-1+05+05.csv');
 %data = csvread('../../data/zacetek_vertikala.csv');
 %data = csvread('../../data/asus_pol_test.csv');
-%data = csvread('../../data/asus_L_test.csv');
-data = csvread('../../data/asus_dvojnitrikotnik05.csv');
+    %data = csvread('../../data/asus_pravokotnika+diagonala_and_back.csv');
+    %data = csvread('../../data/asus_factory.csv');
+
+%data = csvread('../../data/asus_L_test.csv'); %-1+05+u05+05-u05
+%data = csvread('../../data/asus_dvojnitrikotnik05.csv');
+%data = csvread('../../data/asus_factory_2.csv');
+data = csvread('../../data/asus_+1-1+1-1.csv');
 
 %upoštevam samo acceleracijo po x-osi
 data = data(:,1);
