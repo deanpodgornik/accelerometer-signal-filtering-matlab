@@ -6,7 +6,8 @@
 %data = csvread('../../data/asus_50_povratna.csv');
 %data = csvread('../../data/samsung_-1+0.5+0.5.csv');
 %data = csvread('../../data/samsung_-0.5-0.5+0.5+0.5.csv');
-data = csvread('../../data/samsung_roka_-1+0.5+0.5.csv');
+%data = csvread('../../data/samsung_h_-1+0.5+0.5.csv');
+data = csvread('../../data/samsung_raw_acceleration.csv');
 
 %upoštevam samo acceleracijo po x-osi
 data = data(:,1);
@@ -20,6 +21,7 @@ prag_hitrost = 0.03;
 fistRun_hitrost = 1;
 
 source = data;
+raw_acceleration = data;
 varianca_a = var(source);
 varianca_h = var(source);
 data_length = length(source);
@@ -36,11 +38,21 @@ pozicija = zeros(length(filteredData),1); %po drugi integraciji pa dobim pozicij
 pozicija_raw = zeros(length(filteredData),1);
 
 %èasovni interval
-t = 0.02; %game 
+%t = 0.02; %game
+t = 0.01; %fastest 
 freq = 1 / t; %50Hz
+
+gravity = 0;
 
 %iterator (real-time simulator)
 for i=1:data_length
+    %retrieving linear acceleration
+    alpha = 0.8;
+    gravity = alpha * gravity + (1 - alpha) * raw_acceleration(i);
+    linear_acceleration = raw_acceleration(i) - gravity;
+    source(i) = linear_acceleration;
+    
+    %filtering linear acceleration
     if(i-1>0)
         filteredData(i) = Filtering(source, i, 'kalman', {varianca_a, 'pospesek'});      
     else
