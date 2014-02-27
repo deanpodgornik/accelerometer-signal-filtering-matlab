@@ -20,9 +20,9 @@
 %data = csvread('../../data/asus_L_test.csv'); %-1+05+u05+05-u05
 %data = csvread('../../data/asus_dvojnitrikotnik05.csv');
 %data = csvread('../../data/asus_factory_2.csv');
-%data = csvread('../../data/asus_+1-1+1-1.csv');
+data = csvread('../../data/asus_+1-1+1-1.csv');
 %data = csvread('../../data/asus_hitro_levo_desno.csv');
-data = csvread('../../data/asus_hitro-1+1_2.csv');
+%data = csvread('../../data/asus_hitro-1+1_2.csv');
 
 %upoštevam samo acceleracijo po x-osi
 data = data(:,1);
@@ -34,7 +34,6 @@ data = data(:,1);
 prag_pospesek = 0.8;
 prag_hitrost = 0.03;
 
-fistRun_pospesek = 1;
 fistRun_hitrost = 1;
 
 source = data;
@@ -72,8 +71,12 @@ for i=1:data_length
     else
         filteredData(i) = 0;
     end
+    %raw filtering
+    if(abs(filteredData(i))<prag_pospesek)
+        filteredData(i) = 0;
+    end
     %popravek filtriranja
-    filteredData(i) = Popravek_pospeska(filteredData, i, prag_pospesek);
+    filteredData(i) = 
     
     %integracija - hitrost
     if(i-1>0)

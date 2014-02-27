@@ -1,10 +1,10 @@
-function [nova_vrednost, firstRun] = Popravek_hitrosti( data, i, firstRun )
+function [nova_vrednost, firstRun] = Popravek_hitrosti( pospesek, data, i, firstRun )
     persistent ponavljajoca_vrednost;
     persistent st_ponavljanja;
     persistent popravek;
     persistent iteracija_gibanja;
     persistent predznak;
-    prag = 50;
+    pragPonavljanja = 50;
     
     if firstRun == 1
         ponavljajoca_vrednost = 0;
@@ -38,7 +38,7 @@ function [nova_vrednost, firstRun] = Popravek_hitrosti( data, i, firstRun )
         
         st_ponavljanja = st_ponavljanja + 1;
         
-        if st_ponavljanja > prag
+        if st_ponavljanja > pragPonavljanja
             %potreben je popravek zaradi napaène konstantne hitrost
             %(popravimo na 0)
             popravek = data(i);
@@ -49,12 +49,12 @@ function [nova_vrednost, firstRun] = Popravek_hitrosti( data, i, firstRun )
             
             %ob ugotovitvi ponavljanja, moram postaviti rezultat na 0, ker
             %se aplikacija popravka nahaja na zaèetku algoritma
-            if st_ponavljanja == prag+1
+            if st_ponavljanja == pragPonavljanja+1
                 nova_vrednost = 0;
             end
         else
             %ni potreben popravek konstantne hitrosti
-            [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftereffect(iteracija_gibanja, predznak, vhodni_podatek);
+            [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftereffect(pospesek, i, iteracija_gibanja, predznak, vhodni_podatek);
         end
     else
         %vrednost se ne ponavlja (naprava je v gibanju)
@@ -64,7 +64,7 @@ function [nova_vrednost, firstRun] = Popravek_hitrosti( data, i, firstRun )
         ponavljajoca_vrednost = vhodni_podatek;
         
         iteracija_gibanja = iteracija_gibanja + 1;
-        [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftereffect(iteracija_gibanja, predznak, vhodni_podatek);
+        [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftereffect(pospesek, i, iteracija_gibanja, predznak, vhodni_podatek);
     end
 end
 

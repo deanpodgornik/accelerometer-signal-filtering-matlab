@@ -1,0 +1,25 @@
+function [nova_vrednost] = Popravek_pospeska( data, i )
+    %absolutna vrednost
+    absVal = 0;
+    st = 0;
+    for x=0:9
+        if i-x>0
+            absVal = absVal + data(i-x);
+            st = st + 1;
+        end
+    end
+    absVal = absVal / st;
+    
+    if abs(absVal)<0.05
+        %ni veèjih razlik v zadnjim meritvah
+        if(abs(filteredData(i))<prag_pospesek)
+            filteredData(i) = 0;
+        end
+    else
+        %v zadnjih meritvah je veliko meritev, torej smo v stanju hitrega
+        %gibanja. Posledièno zadeve ne postavimo na 0 (ne filtriramo nizkih
+        %frekvenc) v primeru ma
+        
+    end
+end
+

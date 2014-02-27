@@ -1,7 +1,8 @@
 function [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftereffect( pospesek, i, iteracija_gibanja, predznak, vhodni_podatek )
     persistent potencialnaNapaka_sum;
+    persistent potencialnaNapaka_sumSt;
     persistent potencialnaNapaka_st;
-    pragNapake = 150;
+    pragNapake = 100;
 
     if iteracija_gibanja == 1
         %nastavim predznak (doloèim ali je treuten premik v pozitivni
@@ -29,16 +30,10 @@ function [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftere
             potencialnaNapaka_st = potencialnaNapaka_st + 1;
             
             if(potencialnaNapaka_st > pragNapake)
-                %napacno sem ocenil. Prišlo je do hitre spremembe smeri.
-                %Novih vrednosti ne bom veè postavil na 0
+                %napacno sem ocenil. Prišlo je do hitre spremembe smeri
                 nova_vrednost = vhodni_podatek;
                 %popravek zaradi napake
-                if abs(potencialnaNapaka_sum) > 0
-                    nova_vrednost = nova_vrednost + potencialnaNapaka_sum;
-                    %ponastavitev sum-napaka (inicializacija za kasnejše
-                    %potencialne napake)
-                    potencialnaNapaka_sum = 0;
-                end
+                vhodna
             else
                 %trenutno smo še mnenja, da je sprememba smeri le posledica
                 %šuma in NE dejanske spremembe smeri gibanja naprave
