@@ -21,6 +21,8 @@
 %data = csvread('../../data/asus_dvojnitrikotnik05.csv');
 %data = csvread('../../data/asus_factory_2.csv');
 data = csvread('../../data/asus_+1-1+1-1.csv');
+%data = csvread('../../data/asus_hitro_levo_desno.csv');
+%data = csvread('../../data/asus_hitro-1+1_2.csv');
 
 %upoštevam samo acceleracijo po x-osi
 data = data(:,1);
@@ -36,7 +38,8 @@ fistRun_hitrost = 1;
 
 source = data;
 raw_acceleration = data;
-varianca_a = var(source);
+%varianca_a = var(source);
+varianca_a = 1.7346;
 varianca_h = var(source);
 data_length = length(source);
 

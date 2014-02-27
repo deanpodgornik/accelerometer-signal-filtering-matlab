@@ -20,7 +20,9 @@ function output_data = Filtering( input_data, i, filter_type, parameters )
                 %Q_a = 0.00003;
                 Q_a = 0.006; %working
                 
-                R_a = varianca;
+                %R_a = varianca;
+                %R_a = varianca;
+                R_a = 1.7;
             end
 
             if strcmp(namen,'hitrost')==1 && isempty(firstRun_h)

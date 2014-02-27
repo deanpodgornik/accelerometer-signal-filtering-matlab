@@ -4,7 +4,7 @@ function [nova_vrednost, firstRun] = Popravek_hitrosti( data, i, firstRun )
     persistent popravek;
     persistent iteracija_gibanja;
     persistent predznak;
-    prag = 100;
+    prag = 50;
     
     if firstRun == 1
         ponavljajoca_vrednost = 0;
