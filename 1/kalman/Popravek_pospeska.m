@@ -1,18 +1,30 @@
 function nova_vrednost = Popravek_pospeska( data, i, prag_pospesek )
     prag_zadnji_meritev = 0.5;
 
-    %absolutna vrednost
-    absVal = 0;
+    %povpreèje
+    mean = 0;
     st = 0;
-    for x=0:30
+    var_N = 20;
+    for x=0:var_N
         if i-x>0
-            absVal = absVal + data(i-x);
+            mean = mean + data(i-x);
             st = st + 1;
         end
     end
-    absVal = absVal / st;
+    mean = mean / st;
     
-    if abs(absVal)<prag_zadnji_meritev
+    if(i>=500)
+        i
+    end
+    
+    %varianca
+    varianca = 0;
+    for x=0:st-1
+        varianca = varianca + (data(i-x) - mean)^2;
+    end
+    varianca = varianca / st
+    
+    if varianca < 0.05
         %ni veèjih razlik v zadnjim meritvah
         if(abs(data(i))<prag_pospesek)
             nova_vrednost = 0;

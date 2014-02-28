@@ -1,25 +1,35 @@
-function [nova_vrednost] = Popravek_pospeska( data, i )
-    %absolutna vrednost
-    absVal = 0;
+function nova_vrednost = Popravek_pospeska( data, i, prag_pospesek )
+    prag_zadnji_meritev = 0.5;
+
+    %povpreèje
+    mean = 0;
     st = 0;
-    for x=0:9
+    for x=0:30
         if i-x>0
-            absVal = absVal + data(i-x);
+            mean = mean + data(i-x);
             st = st + 1;
         end
     end
-    absVal = absVal / st;
+    mean = mean / st;
     
-    if abs(absVal)<0.05
+    %varianca
+    varianca = 0;
+    for x=0:st-1
+        varianca = varianca + (data(i-x) - mean);
+    end
+    
+    if varianca < 0.02
         %ni veèjih razlik v zadnjim meritvah
-        if(abs(filteredData(i))<prag_pospesek)
-            filteredData(i) = 0;
+        if(abs(data(i))<prag_pospesek)
+            nova_vrednost = 0;
+        else
+            nova_vrednost = data(i);
         end
     else
         %v zadnjih meritvah je veliko meritev, torej smo v stanju hitrega
         %gibanja. Posledièno zadeve ne postavimo na 0 (ne filtriramo nizkih
-        %frekvenc) v primeru ma
-        
+        %frekvenc) v primeru majhnih vrednosti
+        nova_vrednost = data(i);
     end
 end
 

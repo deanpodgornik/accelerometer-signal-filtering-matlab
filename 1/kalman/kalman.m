@@ -8,7 +8,7 @@
 %data = csvread('../../data/samsung_-0.5-0.5+0.5+0.5.csv');
 %data = csvread('../../data/samsung_h_-1+0.5+0.5.csv');
 %data = csvread('../../data/samsung_raw_acceleration.csv');
-data = csvread('../../data/asus-1+05+05.csv');
+%data = csvread('../../data/asus-1+05+05.csv');
 %data = csvread('../../data/asus_-1+1.csv');
 %data = csvread('../../data/asus_roka-1+1.csv');
 %data = csvread('../../data/asus_triangle_-1+05+05.csv');
@@ -20,7 +20,7 @@ data = csvread('../../data/asus-1+05+05.csv');
 %data = csvread('../../data/asus_L_test.csv'); %-1+05+u05+05-u05
 %data = csvread('../../data/asus_dvojnitrikotnik05.csv');
 %data = csvread('../../data/asus_factory_2.csv');
-%data = csvread('../../data/asus_+1-1+1-1.csv');
+data = csvread('../../data/asus_+1-1+1-1.csv');
 %data = csvread('../../data/asus_hitro_levo_desno.csv');
 %data = csvread('../../data/asus_hitro-1+1_2.csv');
 
