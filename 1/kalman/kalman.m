@@ -8,7 +8,7 @@
 %data = csvread('../../data/samsung_-0.5-0.5+0.5+0.5.csv');
 %data = csvread('../../data/samsung_h_-1+0.5+0.5.csv');
 %data = csvread('../../data/samsung_raw_acceleration.csv');
-%data = csvread('../../data/asus-1+05+05.csv');
+data = csvread('../../data/asus-1+05+05.csv');
 %data = csvread('../../data/asus_-1+1.csv');
 %data = csvread('../../data/asus_roka-1+1.csv');
 %data = csvread('../../data/asus_triangle_-1+05+05.csv');
@@ -22,7 +22,7 @@
 %data = csvread('../../data/asus_factory_2.csv');
 %data = csvread('../../data/asus_+1-1+1-1.csv');
 %data = csvread('../../data/asus_hitro_levo_desno.csv');
-data = csvread('../../data/asus_hitro-1+1_2.csv');
+%data = csvread('../../data/asus_hitro-1+1_2.csv');
 
 %upoštevam samo acceleracijo po x-osi
 data = data(:,1);
@@ -103,11 +103,14 @@ for i=1:data_length
     end
     
     %popravek pozicije na podlagi kalibracije
-    %pozicija(i) = pozicija(i) * 18;
+    pozicija(i) = pozicija(i) * 2.2;
 end
 
 %pospešek
 x = 1:data_length;
+
+%pobrišem grafe
+clf
 
 subplot(3,1,1);
 plot(x, source, 'color', 'red');
@@ -123,6 +126,7 @@ hold on;
 plot(x, hitrost_raw, 'color', 'red');
 plot(x, hitrost, 'color', 'blue');
 legend('hitrost NE-filtrirana','hitrost filtrirana');
+ylim([-2 2])
 hold off;
 
 %pozicija
