@@ -1,8 +1,7 @@
-function [nova_vrednost firstRun] = Popravek_pospeska( data, i, prag_pospesek, firstRun)
-    persistent stNeBlizuNic;
+function [nova_vrednost firstRun stNeBlizuNic] = Popravek_pospeska( data, i, prag_pospesek, firstRun, stNeBlizuNic )    
     persistent stIteracijNeupostevanja;
     pragNeBlizuNic = 20;
-    stIteracij = 80;
+    stIteracij = 100;
 
     if firstRun == 1
         stNeBlizuNic = 0;
@@ -10,6 +9,7 @@ function [nova_vrednost firstRun] = Popravek_pospeska( data, i, prag_pospesek, f
         firstRun = 0;
     end
     
+    %debug
     if(i > 700)
         i
     end
