@@ -35,6 +35,7 @@ prag_pospesek = 0.8;
 prag_hitrost = 0.03;
 
 fistRun_pospesek = 1;
+firstRun_filtriranjePospeska = 1;
 fistRun_hitrost = 1;
 
 source = data;
@@ -73,7 +74,7 @@ for i=1:data_length
         filteredData(i) = 0;
     end
     %popravek filtriranja
-    filteredData(i) = Popravek_pospeska(filteredData, i, prag_pospesek);
+    [filteredData(i) firstRun_filtriranjePospeska] = Popravek_pospeska(filteredData, i, prag_pospesek, firstRun_filtriranjePospeska);
     
     %integracija - hitrost
     if(i-1>0)

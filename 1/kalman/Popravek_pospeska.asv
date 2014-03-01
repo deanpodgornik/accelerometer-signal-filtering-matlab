@@ -1,24 +1,25 @@
-function nova_vrednost = Popravek_pospeska( data, i, prag_pospesek )
-    prag_zadnji_meritev = 0.5;
-
-    %povpreèje
-    mean = 0;
-    st = 0;
-    for x=0:30
-        if i-x>0
-            mean = mean + data(i-x);
-            st = st + 1;
+function nova_vrednost = Popravek_pospeska( data, i )
+    persistent stNeBlizuNic;
+    persistent stIteracijNeupostevanja;
+    pragNeBlizuNic = 50;
+    stIteracij = 50;
+    
+    if abs(data(i)) < 0.0001
+        %pospesek je enaka 0
+        
+        %ce je vrsta stevil razlicnih stevil dovolj velika, potem
+        %naslednjih N iteracij ne upostevam filtriranja nizkih frekvenc
+        if stNeBlizuNic > pragNeBlizuNic
+            stIteracijNeupostevanja = stIteracij;
         end
-    end
-    mean = mean / st;
-    
-    %varianca
-    varianca = 0;
-    for x=0:st-1
-        varianca = varianca + (data(i-x) - mean);
+        
+        stNeBlizuNic = 0;
+    else
+        %pospesek ni blizu 0
+        stNeBlizuNic = stNeBlizuNic + 1;
     end
     
-    if varianca < 0.02
+    if stIteracijNeupostevanja > 0
         %ni veèjih razlik v zadnjim meritvah
         if(abs(data(i))<prag_pospesek)
             nova_vrednost = 0;
