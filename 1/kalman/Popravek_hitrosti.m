@@ -1,10 +1,10 @@
-function [nova_vrednost, firstRun] = Popravek_hitrosti( pospesek, data, i, firstRun, pospesek_stNeBlizuNic )
+function [nova_vrednost, firstRun] = Popravek_hitrosti( pospesek, data, i, firstRun )
     persistent ponavljajoca_vrednost;
     persistent st_ponavljanja;
     persistent popravek;
     persistent iteracija_gibanja;
     persistent predznak;
-    pragPonavljanja = 20;
+    pragPonavljanja = 40;
     
     if firstRun == 1
         ponavljajoca_vrednost = 0;
@@ -23,7 +23,7 @@ function [nova_vrednost, firstRun] = Popravek_hitrosti( pospesek, data, i, first
     nova_vrednost = vhodni_podatek;
     
     %debug
-    %%{
+    %{
     if i>=1235
         i 
         vhodni_podatek
@@ -54,7 +54,7 @@ function [nova_vrednost, firstRun] = Popravek_hitrosti( pospesek, data, i, first
             end
         else
             %ni potreben popravek konstantne hitrosti
-            [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftereffect(pospesek, i, iteracija_gibanja, predznak, vhodni_podatek, pospesek_stNeBlizuNic);
+            [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftereffect(pospesek, i, iteracija_gibanja, predznak, vhodni_podatek);
         end
     else
         %vrednost se ne ponavlja (naprava je v gibanju)
@@ -64,7 +64,7 @@ function [nova_vrednost, firstRun] = Popravek_hitrosti( pospesek, data, i, first
         ponavljajoca_vrednost = vhodni_podatek;
         
         iteracija_gibanja = iteracija_gibanja + 1;
-        [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftereffect(pospesek, i, iteracija_gibanja, predznak, vhodni_podatek, pospesek_stNeBlizuNic);
+        [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftereffect(pospesek, i, iteracija_gibanja, predznak, vhodni_podatek);
     end
 end
 

@@ -1,8 +1,8 @@
-function [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftereffect( pospesek, i, iteracija_gibanja, predznak, vhodni_podatek, pospesek_stNeBlizuNic )
+function [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftereffect( pospesek, i, iteracija_gibanja, predznak, vhodni_podatek )
     persistent potencialnaNapaka_sum;
     persistent potencialnaNapaka_st;
-    pragNapake = 150;
-    prag_pospesekNeBlizuNic = 30;
+    pragNapake = 180;
+    faktorSkaliranjaPopravkaNapake = 0.65;
 
     if iteracija_gibanja == 1
         %nastavim predznak (doloèim ali je trenuten premik v pozitivni
@@ -34,17 +34,12 @@ function [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftere
                 %Novih vrednosti ne bom veè postavil na 0
                 nova_vrednost = vhodni_podatek;
                 
-                %apliciram popravek zaradi napake, èe se zadeva nahaja v
-                %stanju hitrega prehoda in NE v stanju prehoda v stanje
-                %mirovanja
-                if pospesek_stNeBlizuNic > prag_pospesekNeBlizuNic
-                    %preverim ali popravek sploh obstaja
-                    if abs(potencialnaNapaka_sum) > 0
-                        nova_vrednost = nova_vrednost + potencialnaNapaka_sum;
-                        %ponastavitev sum-napaka (inicializacija za kasnejše
-                        %potencialne napake)
-                        potencialnaNapaka_sum = 0;
-                    end
+                %preverim ali popravek sploh obstaja
+                if abs(potencialnaNapaka_sum) > 0                    
+                    nova_vrednost = nova_vrednost + (potencialnaNapaka_sum * faktorSkaliranjaPopravkaNapake);
+                    %ponastavitev sum-napaka (inicializacija za kasnejše
+                    %potencialne napake)
+                    potencialnaNapaka_sum = 0;
                 end
             else
                 %trenutno smo še mnenja, da je sprememba smeri le posledica

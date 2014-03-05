@@ -8,21 +8,24 @@
 %data = csvread('../../data/samsung_-0.5-0.5+0.5+0.5.csv');
 %data = csvread('../../data/samsung_h_-1+0.5+0.5.csv');
 %data = csvread('../../data/samsung_raw_acceleration.csv');
-%data = csvread('../../data/asus-1+05+05.csv');
 %data = csvread('../../data/asus_-1+1.csv');
 %data = csvread('../../data/asus_roka-1+1.csv');
     %data = csvread('../../data/asus_pravokotnika+diagonala_and_back.csv');
     %data = csvread('../../data/asus_factory.csv');
-
 %data = csvread('../../data/asus_triangle_-1+05+05.csv');
 %data = csvread('../../data/zacetek_vertikala.csv');
-%data = csvread('../../data/asus_pol_test.csv');
-data = csvread('../../data/asus_L_test.csv'); %-1+05+u05+05-u05
+
+%data = csvread('../../data/asus-1+05+05.csv');
+    %data = csvread('../../data/asus_pol_test.csv');
+%data = csvread('../../data/asus_L_test.csv'); %-1+05+u05+05-u05
 %data = csvread('../../data/asus_dvojnitrikotnik05.csv');
 %data = csvread('../../data/asus_factory_2.csv');
 %data = csvread('../../data/asus_+1-1+1-1.csv');
 %data = csvread('../../data/asus_hitro_levo_desno.csv');
 %data = csvread('../../data/asus_hitro-1+1_2.csv');
+%data = csvread('../../data/lastTest.csv');
+%data = csvread('../../data/hitro_in_posasi.csv');
+data = csvread('../../data/hitro_in_posasi_2.csv');
 
 %upoštevam samo acceleracijo po x-osi
 data = data(:,1);
@@ -33,8 +36,6 @@ data = data(:,1);
 
 prag_pospesek = 0.8;
 prag_hitrost = 0.03;
-
-pospesek_stNeBlizuNic = 0;
 
 fistRun_pospesek = 1;
 firstRun_filtriranjePospeska = 1;
@@ -76,7 +77,7 @@ for i=1:data_length
         filteredData(i) = 0;
     end
     %popravek filtriranja
-    [filteredData(i) firstRun_filtriranjePospeska pospesek_stNeBlizuNic] = Popravek_pospeska(filteredData, i, prag_pospesek, firstRun_filtriranjePospeska, pospesek_stNeBlizuNic );
+    [filteredData(i) firstRun_filtriranjePospeska] = Popravek_pospeska(filteredData, i, prag_pospesek, firstRun_filtriranjePospeska );
     
     %integracija - hitrost
     if(i-1>0)
@@ -90,7 +91,7 @@ for i=1:data_length
         hitrost(i) = 0;
     end
     %popravek filtriranja
-    [nova_hitrost fistRun_hitrost] =  Popravek_hitrosti(filteredData, hitrost, i, fistRun_hitrost, pospesek_stNeBlizuNic);
+    [nova_hitrost fistRun_hitrost] =  Popravek_hitrosti(filteredData, hitrost, i, fistRun_hitrost);
     hitrost(i) = nova_hitrost;
 
     %integracija - pozicija

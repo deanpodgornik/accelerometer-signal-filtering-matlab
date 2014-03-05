@@ -1,53 +1,84 @@
-function [nova_vrednost firstRun stNeBlizuNic] = Popravek_pospeska( data, i, prag_pospesek, firstRun, stNeBlizuNic )    
+function [nova_vrednost firstRun] = Popravek_pospeska( data, i, prag_pospesek, firstRun)    
+    persistent iteracijaGibanja;
+    persistent ponavljajocaVrednost;
+    persistent stPonovitev;
     persistent stIteracijNeupostevanja;
-    pragNeBlizuNic = 20;
-    stIteracij = 100;
-
+    persistent neupostevanjePredznakaPorabljeno;
+    pragPonavljanja = 20;
+    iniStIteracijNeupostevanja = 150;
+    pragPrevirjanjaSpremembeSmeri = 20;
+    
+    %{
+    if i>666
+        i
+    end
+    %}
+        
     if firstRun == 1
-        stNeBlizuNic = 0;
         stIteracijNeupostevanja = 0;
+        iteracijaGibanja = 0;
+        predznak = 0;
+        neupostevanjePredznakaPorabljeno = false;
+        ponavljajocaVrednost = 0;
+        stPonovitev = 0;
+        
         firstRun = 0;
     end
     
-    %debug
-    if(i > 700)
-        i
-    end
-    
-    %MORAM NAJPREJ VRŠT NA 0, ÈE USTREZA PRAGU
+    %opravim filtriranje nizkih frekvenc
+    filtriranaVrednost = data(i);
     if abs(data(i)) < prag_pospesek
-        tmp_val = 0;
-    else
-        tmp_val = data(i);
+        filtriranaVrednost = 0;
     end
     
-    if tmp_val == 0
-        %pospesek je enaka 0
+    %preverim ali je na voljo nova ponavljajoèa vrednost    
+    if abs(filtriranaVrednost - ponavljajocaVrednost) < 0.0001
+        %najdena ponavljajoèa vrednost (imamo konstantno hitrost - torej naprava miruje)
         
-        %ce je vrsta stevil razlicnih stevil dovolj velika, potem
-        %naslednjih N iteracij ne upostevam filtriranja nizkih frekvenc
-        if stNeBlizuNic > pragNeBlizuNic
-            stIteracijNeupostevanja = stIteracij;
+        stPonovitev = stPonovitev + 1;
+        
+        if stPonovitev > pragPonavljanja            
+            %s tem povem, da se naprave sedaj ne giba
+            iteracijaGibanja = 0;
+            
+            %neupoštevanja filtranja nizkih frekcenc
+            if stIteracijNeupostevanja==0
+                neupostevanjePredznakaPorabljeno = false;
+            end
+        end        
+    else
+        %vrednost se ne ponavlja (naprava je v gibanju)
+        
+        stPonovitev = 0;
+        %nastavim novo vrednost, ki se mora ponavljati
+        ponavljajocaVrednost = filtriranaVrednost;
+        
+        iteracijaGibanja = iteracijaGibanja + 1;
+        
+        %SEKCIJA: PREVERJANJE ZA OBMOÈJE NEUPOŠTEVANJA FILTRIRANJA NIZKIH
+        %FREKVENC
+        if neupostevanjePredznakaPorabljeno == false
+            if iteracijaGibanja > pragPrevirjanjaSpremembeSmeri 
+                if abs(filtriranaVrednost) < 0.0001
+                    %prihaja do prve spremembe smeri hitrosti
+                    %samo prvi prehod prekinem
+                    stIteracijNeupostevanja = iniStIteracijNeupostevanja;
+                    neupostevanjePredznakaPorabljeno = true;
+                end
+            end
         end
-        
-        stNeBlizuNic = 0;
-    else
-        %pospesek ni blizu 0
-        stNeBlizuNic = stNeBlizuNic + 1;
     end
     
-    if stIteracijNeupostevanja > 0
-        %ne upoštevam filtriranja nizkih frekvenc
-        nova_vrednost = data(i);
-        
+    %SEKCIJA: preverim ali smo v obmoèju neupoštevanja nizkih frekvenc
+    if stIteracijNeupostevanja>0
+        %obmoèje neupoštevanja filtriranja nizkih frekvenc
+        neupostevanjePredznakaPorabljeno;
         stIteracijNeupostevanja = stIteracijNeupostevanja - 1;
+        nova_vrednost = data(i);
     else
-        %upoštevam filtriranje nizkih frekvenc
-        if(abs(data(i))<prag_pospesek)
-            nova_vrednost = 0;
-        else
-            nova_vrednost = data(i);
-        end
+        %obmoèje upoštevanja filtriranja nizkih frekvenc
+        nova_vrednost = filtriranaVrednost;
     end
+    
 end
 

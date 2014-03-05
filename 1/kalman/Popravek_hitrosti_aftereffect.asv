@@ -1,10 +1,10 @@
-function [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftereffect( pospesek, i, iteracija_gibanja, predznak, vhodni_podatek, pospesek_stNeBlizuNic )
+function [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftereffect( pospesek, i, iteracija_gibanja, predznak, vhodni_podatek )
     persistent potencialnaNapaka_sum;
     persistent potencialnaNapaka_st;
-    pragNapake = 150;
+    pragNapake = 180;
 
     if iteracija_gibanja == 1
-        %nastavim predznak (doloèim ali je treuten premik v pozitivni
+        %nastavim predznak (doloèim ali je trenuten premik v pozitivni
         %ali negativni smeri
         if vhodni_podatek<0
             predznak = -1;
@@ -33,9 +33,11 @@ function [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftere
                 %Novih vrednosti ne bom veè postavil na 0
                 nova_vrednost = vhodni_podatek;
                 
-                %popravek zaradi napake
+                %preverim ali popravek sploh obstaja
                 if abs(potencialnaNapaka_sum) > 0
-                    nova_vrednost = nova_vrednost + potencialnaNapaka_sum;
+                    potencialnaNapaka_sum
+                    
+                    nova_vrednost = nova_vrednost + (potencialnaNapaka_sum * fa);
                     %ponastavitev sum-napaka (inicializacija za kasnejše
                     %potencialne napake)
                     potencialnaNapaka_sum = 0;
