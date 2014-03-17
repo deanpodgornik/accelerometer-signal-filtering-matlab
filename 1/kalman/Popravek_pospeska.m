@@ -5,7 +5,8 @@ function [nova_vrednost firstRun] = Popravek_pospeska( data, i, prag_pospesek, f
     persistent stIteracijNeupostevanja;
     persistent neupostevanjePredznakaPorabljeno;
     pragPonavljanja = 20;
-    iniStIteracijNeupostevanja = 150;
+    %iniStIteracijNeupostevanja = 150;
+    iniStIteracijNeupostevanja = 200;
     pragPrevirjanjaSpremembeSmeri = 20;
     
     %{

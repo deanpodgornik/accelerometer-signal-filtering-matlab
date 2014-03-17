@@ -25,7 +25,12 @@
 %data = csvread('../../data/asus_hitro-1+1_2.csv');
 %data = csvread('../../data/lastTest.csv');
 %data = csvread('../../data/hitro_in_posasi.csv');
-data = csvread('../../data/hitro_in_posasi_2.csv');
+%data = csvread('../../data/hitro_in_posasi_2.csv');
+
+%data = csvread('../../data/asus_data.csv');
+
+%kratki premiki
+data = csvread('../../data/kratka_razdalja_3x.csv');
 
 %upoštevam samo acceleracijo po x-osi
 data = data(:,1);
@@ -34,7 +39,9 @@ data = data(:,1);
 %data = removerows(data,'ind',1500:3500);
 %data = removerows(data,'ind',1:800);
 
-prag_pospesek = 0.8;
+%prag_pospesek = 0.8;
+prag_pospesek = 0.4;
+
 prag_hitrost = 0.03;
 
 fistRun_pospesek = 1;
@@ -76,8 +83,18 @@ for i=1:data_length
     else
         filteredData(i) = 0;
     end
+    
+    test = filteredData(i)
+    test
+    
     %popravek filtriranja
     [filteredData(i) firstRun_filtriranjePospeska] = Popravek_pospeska(filteredData, i, prag_pospesek, firstRun_filtriranjePospeska );
+    
+    test = filteredData(i)
+    
+    if(i>=322)
+        i
+    end
     
     %integracija - hitrost
     if(i-1>0)
@@ -85,6 +102,8 @@ for i=1:data_length
         
         %filtriranje
         hitrost(i) = hitrost_raw(i); %brez filtriranja
+        test = hitrost(i);
+        i
         %hitrost(i) = Filtering(hitrost_raw, i, 'kalman', {varianca_h, 'hitrost'});  
     else
         hitrost_raw(i) = 0;
@@ -104,6 +123,11 @@ for i=1:data_length
     else
         pozicija_raw(i) = 0;
         pozicija(i) = 0;
+    end
+    
+    posTmp = pozicija(i)
+    if(i>=322)
+        posTmp
     end
     
     %popravek pozicije na podlagi kalibracije
