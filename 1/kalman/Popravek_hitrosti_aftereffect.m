@@ -1,7 +1,7 @@
 function [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftereffect( pospesek, i, iteracija_gibanja, predznak, vhodni_podatek )
     persistent potencialnaNapaka_sum;
     persistent potencialnaNapaka_st;
-    pragNapake = 180;
+    pragNapake = 250;
     faktorSkaliranjaPopravkaNapake = 0.65;
 
     if iteracija_gibanja == 1

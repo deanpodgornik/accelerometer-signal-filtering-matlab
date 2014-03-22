@@ -30,7 +30,11 @@
 %data = csvread('../../data/asus_data.csv');
 
 %kratki premiki
-data = csvread('../../data/kratka_razdalja_3x.csv');
+%data = csvread('../../data/kratka_razdalja_3x.csv');
+%data = csvread('../../data/-20+20-20+20-20+10+10.csv');
+%data = csvread('../../data/d20+g20+l20.csv');
+data = csvread('../../data/-10+20.csv');
+
 
 %upoštevam samo acceleracijo po x-osi
 data = data(:,1);
@@ -84,17 +88,20 @@ for i=1:data_length
         filteredData(i) = 0;
     end
     
+    %{
     test = filteredData(i)
     test
+    %}
     
     %popravek filtriranja
     [filteredData(i) firstRun_filtriranjePospeska] = Popravek_pospeska(filteredData, i, prag_pospesek, firstRun_filtriranjePospeska );
     
+    %{
     test = filteredData(i)
-    
     if(i>=322)
         i
     end
+    %}
     
     %integracija - hitrost
     if(i-1>0)
@@ -154,7 +161,8 @@ hold on;
 plot(x, hitrost_raw, 'color', 'red');
 plot(x, hitrost, 'color', 'blue');
 legend('hitrost NE-filtrirana','hitrost filtrirana');
-ylim([-2 2])
+%ylim([-2 2])
+ylim([-0.5 0.5])
 hold off;
 
 %pozicija

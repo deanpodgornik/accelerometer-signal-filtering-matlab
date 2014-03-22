@@ -23,8 +23,9 @@ function [nova_vrednost, firstRun] = Popravek_hitrosti( pospesek, data, i, first
     nova_vrednost = vhodni_podatek;
     
     %debug
-    %{
-    if i>=1235
+    %%{
+    %if i>=568
+    if i>=529
         i 
         vhodni_podatek
         data(i)
@@ -51,6 +52,7 @@ function [nova_vrednost, firstRun] = Popravek_hitrosti( pospesek, data, i, first
             %se aplikacija popravka nahaja na zaèetku algoritma
             if st_ponavljanja == pragPonavljanja+1
                 nova_vrednost = 0;
+                ponavljajoca_vrednost = 0;
             end
         else
             %ni potreben popravek konstantne hitrosti
