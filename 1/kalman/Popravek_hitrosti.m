@@ -1,14 +1,12 @@
-function [nova_vrednost, firstRun] = Popravek_hitrosti( pospesek, data, i, firstRun )
+function [nova_vrednost, firstRun, iteracija_gibanja] = Popravek_hitrosti( pospesek, data, i, firstRun, iteracija_gibanja)
     persistent ponavljajoca_vrednost;
     persistent st_ponavljanja;
     persistent popravek;
-    persistent iteracija_gibanja;
     persistent predznak;
     pragPonavljanja = 40;
     
     if firstRun == 1
         ponavljajoca_vrednost = 0;
-        iteracija_gibanja = 0;
         st_ponavljanja = 0;
         popravek = 0;
         predznak = 1;
