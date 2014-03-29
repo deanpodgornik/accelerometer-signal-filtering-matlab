@@ -38,8 +38,8 @@
 %data = csvread('../../data/gyro2.csv');
 %data = csvread('../../data/gyro3.csv');
 
-%data = csvread('../../data/gyro4.csv');
-data = csvread('../../data/gyro5.csv');
+data = csvread('../../data/gyro4.csv');
+%data = csvread('../../data/gyro5.csv');
 %data = csvread('../../data/gyro6.csv');
 
 clear pospesek_raw;
@@ -95,7 +95,10 @@ freq = 1 / t; %50Hz
 
 gravity = 0;
 
-mejeSistemaX = 0.05;
+%doloèim koliko oddaljena je meja slike od izhodišèa
+mejeSistemaX = 0.06;
+%spremenljivka drži informacijo ali smo zadeli mejo slike ali ne
+zadetekMejeSlike = 0;
 
 giroskopIntegracija = 0;
 
@@ -137,8 +140,8 @@ for i=1:data_length
         hitrost_raw(i) = 0;
         hitrost(i) = 0;
     end
-    %popravek filtriranja
-    [nova_hitrost fistRun_hitrost iteracija_gibanja] =  Popravek_hitrosti(filteredData, hitrost, i, fistRun_hitrost, iteracija_gibanja);
+    %popravek filtriranja hitrosti
+    [nova_hitrost fistRun_hitrost iteracija_gibanja zadetekMejeSlike] =  Popravek_hitrosti(filteredData, hitrost, i, fistRun_hitrost, iteracija_gibanja, zadetekMejeSlike);
     hitrost(i) = nova_hitrost;
 
     %integracija - pozicija
@@ -158,6 +161,7 @@ for i=1:data_length
         posTmp
     end
     
+    %preverjanje trka ob mejo slike
     sprVrednostGledeMej = 0;
     pozicija(i)
     if pozicija(i) < -mejeSistemaX
@@ -177,6 +181,9 @@ for i=1:data_length
         %doloèim da je nov zaèetek gibanja, s èimer se tudi omogoèi
         %instantno spremembo smeri
         iteracija_gibanja = 0;
+        
+        %shranim informacijo da je prišlo do zadetka v mojo slike
+        zadetekMejeSlike = 1;
     end
     
     %popravek pozicije na podlagi kalibracije

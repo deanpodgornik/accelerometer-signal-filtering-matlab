@@ -1,4 +1,4 @@
-function [nova_vrednost, firstRun, iteracija_gibanja] = Popravek_hitrosti( pospesek, data, i, firstRun, iteracija_gibanja)
+function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Popravek_hitrosti( pospesek, data, i, firstRun, iteracija_gibanja, zadetekMejeSlike)
     persistent ponavljajoca_vrednost;
     persistent st_ponavljanja;
     persistent popravek;
@@ -32,8 +32,12 @@ function [nova_vrednost, firstRun, iteracija_gibanja] = Popravek_hitrosti( pospe
     %}
     
     %preverim ali je na voljo nova ponavljajoèa vrednost    
-    if abs(vhodni_podatek - ponavljajoca_vrednost) < 0.0001
+    %if abs(vhodni_podatek - ponavljajoca_vrednost) < 0.0001
+    if abs(vhodni_podatek - ponavljajoca_vrednost) < 0.001 %znižal sem mejo obravnavanja enakosti, saj na taè naèin dobim enakost med vrednostimi, ki se malo razlikujejo
         %najdena ponavljajoèa vrednost (imamo konstantno hitrost - torej naprava miruje)
+        
+        %s tem omogoèim višji prag iskanja enakosti
+        ponavljajoca_vrednost = vhodni_podatek;
         
         st_ponavljanja = st_ponavljanja + 1;
         
@@ -45,6 +49,9 @@ function [nova_vrednost, firstRun, iteracija_gibanja] = Popravek_hitrosti( pospe
             %s tem povem algoritmu za odstranjevanje "aftereffekta", da se
             %naprave sedaj ne giba
             iteracija_gibanja = 0;
+            %posledièno tudi velja da nimamo veè efekta zadetka v mejo
+            %sistema
+            zadetekMejeSlike = 0;
             
             %ob ugotovitvi ponavljanja, moram postaviti rezultat na 0, ker
             %se aplikacija popravka nahaja na zaèetku algoritma
@@ -54,7 +61,7 @@ function [nova_vrednost, firstRun, iteracija_gibanja] = Popravek_hitrosti( pospe
             end
         else
             %ni potreben popravek konstantne hitrosti
-            [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftereffect(pospesek, i, iteracija_gibanja, predznak, vhodni_podatek);
+            [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Popravek_hitrosti_aftereffect(pospesek, i, iteracija_gibanja, predznak, vhodni_podatek, zadetekMejeSlike);
         end
     else
         %vrednost se ne ponavlja (naprava je v gibanju)
@@ -64,7 +71,7 @@ function [nova_vrednost, firstRun, iteracija_gibanja] = Popravek_hitrosti( pospe
         ponavljajoca_vrednost = vhodni_podatek;
         
         iteracija_gibanja = iteracija_gibanja + 1;
-        [nova_vrednost, iteracija_gibanja, predznak] = Popravek_hitrosti_aftereffect(pospesek, i, iteracija_gibanja, predznak, vhodni_podatek);
+        [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Popravek_hitrosti_aftereffect(pospesek, i, iteracija_gibanja, predznak, vhodni_podatek, zadetekMejeSlike);
     end
 end
 
