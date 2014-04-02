@@ -17,19 +17,8 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
     %(ob prvi iteraciji je popravek 0, torej niè ne vpliva na zaèetku)
     vhodni_podatek = data(i) + ((-1) * popravek);
     
-    %brez filtriranja (privzeti rezultat)
+    %rezultat v primeru da ne pride do filtriranja
     nova_vrednost = vhodni_podatek;
-    
-    %debug
-    %%{
-    %if i>=568
-    if i>=529
-        i 
-        vhodni_podatek
-        data(i)
-        x=1;
-    end
-    %}
     
     %preverim ali je na voljo nova ponavljajoèa vrednost    
     %if abs(vhodni_podatek - ponavljajoca_vrednost) < 0.0001

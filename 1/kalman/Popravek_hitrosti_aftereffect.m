@@ -41,7 +41,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                 %zaznana posledica zadetka meje
                 
                 nova_vrednost = 0;
-                potencialnaNapaka_sum = potencialnaNapaka_sum + vhodni_podatek
+                potencialnaNapaka_sum = potencialnaNapaka_sum + abs(vhodni_podatek)
                 
                 %preverim èe smo prekoraèili 
                 if(potencialnaNapaka_sum > prag_potencialnaNapaka_sum)
