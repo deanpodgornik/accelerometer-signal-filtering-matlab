@@ -38,12 +38,16 @@
 %data = csvread('../../data/gyro2.csv');
 %data = csvread('../../data/gyro3.csv');
 
-data = csvread('../../data/gyro4.csv');
+%data = csvread('../../data/gyro4.csv');
 %data = csvread('../../data/gyro5.csv');
 %data = csvread('../../data/gyro6.csv');
 
 %data = csvread('../../data/gyro8.csv');
 %data = csvread('../../data/gyro9.csv');
+%data = csvread('../../data/gyro10.csv'); %Y
+%data = csvread('../../data/gyro11.csv');
+%data = csvread('../../data/gyro12.csv'); %Y
+data = csvread('../../data/gyro13.csv'); %Y
 
 clear pospesek_raw;
 clear pospesek;
@@ -57,8 +61,8 @@ iteracija_gibanja = 0;
 giroskop = data(:,6);
 
 %upoštevam samo acceleracijo po x-osi
-data = data(:,1); %X
-%data = data(:,2); %Y
+%data = data(:,1); %X
+data = data(:,2); %Y
 
 %debugging
 %data = removerows(data,'ind',1500:3500);
@@ -136,7 +140,7 @@ for i=1:data_length
         hitrost_raw(i) = hitrost_raw(i-1) + Integration_step(filteredData,i,freq,'trapez');
         
         %filtriranje
-        if abs(hitrost_raw(i)) < 0.08    %filtriranje nizkih frekvenc
+        if abs(hitrost_raw(i)) < 0.05    %filtriranje nizkih frekvenc
             hitrost(i) = 0.0;
         else
             hitrost(i) = hitrost_raw(i);
