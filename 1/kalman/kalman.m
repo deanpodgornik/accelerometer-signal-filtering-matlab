@@ -47,7 +47,8 @@
 %data = csvread('../../data/gyro10.csv'); %Y
 %data = csvread('../../data/gyro11.csv');
 %data = csvread('../../data/gyro12.csv'); %Y
-data = csvread('../../data/gyro13.csv'); %Y
+%data = csvread('../../data/gyro13.csv'); %Y
+data = csvread('../../data/gyro14.csv')
 
 clear pospesek_raw;
 clear pospesek;
@@ -61,8 +62,8 @@ iteracija_gibanja = 0;
 giroskop = data(:,6);
 
 %upoštevam samo acceleracijo po x-osi
-%data = data(:,1); %X
-data = data(:,2); %Y
+data = data(:,1); %X
+%data = data(:,2); %Y
 
 %debugging
 %data = removerows(data,'ind',1500:3500);
@@ -104,7 +105,8 @@ freq = 1 / t; %50Hz
 gravity = 0;
 
 %doloèim koliko oddaljena je meja slike od izhodišèa
-mejeSistemaX = 0.06;
+mejeSistemaX = 0.10958966816079618;
+mejeSistemaY = 0.09015211004304888;
 %spremenljivka drži informacijo ali smo zadeli mejo slike ali ne
 zadetekMejeSlike = 0;
 
@@ -128,9 +130,9 @@ for i=1:data_length
     %popravek filtriranja
     [filteredData(i) firstRun_filtriranjePospeska] = Popravek_pospeska(filteredData, i, prag_pospesek, firstRun_filtriranjePospeska );
     
-    %{
+    %%{
     test = filteredData(i)
-    if(i>=322)
+    if(i>=370)
         i
     end
     %}
@@ -157,11 +159,13 @@ for i=1:data_length
 
     %integracija - pozicija
     if(i-1>0)
-        pozicija_raw(i) = pozicija_raw(i-1) + Integration_step(hitrost,i,freq,'trapez');
+        faktor_pozicije = 2.2;
+        pozicija_raw(i) = pozicija_raw(i-1) + Integration_step(hitrost,i,freq,'trapez') * faktor_pozicije;
         
         %filtriranje
         %pozicija(i) = Filtering(pozicija_raw, i);
-        pozicija(i) = pozicija_raw(i);
+        pozicija(i) = pozicija_raw(i);       
+        
     else
         pozicija_raw(i) = 0;
         pozicija(i) = 0;

@@ -53,6 +53,10 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                     %odtranim informacijo, da je v stanju obravnavanja
                     %zadetka meje
                     zadetekMejeSlike = 0;
+                    
+                    %inicializiram zadevo: beležim kot da je prva iteracija
+                    %gibanja
+                    iteracija_gibanja = 0;
                 end
             else
                 %ni zaznanega trka ob mejo
@@ -72,7 +76,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                     %trenutno smo še mnenja, da je sprememba smeri le posledica
                     %šuma in NE dejanske spremembe smeri gibanja naprave
                     nova_vrednost = 0;
-                    potencialnaNapaka_sum = potencialnaNapaka_sum + vhodni_podatek;
+                    potencialnaNapaka_sum = potencialnaNapaka_sum + vhodni_podatek; %pravilno da NI abs, saj tako upoštevam visoko varianco (ob prehodu èez 0). Abs pa uporabim pri preverjanju
                 end
             end            
         end
