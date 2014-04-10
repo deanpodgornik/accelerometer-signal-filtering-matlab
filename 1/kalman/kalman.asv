@@ -144,7 +144,7 @@ for i=1:data_length
         hitrost_raw(i) = hitrost_raw(i-1) + Integration_step(filteredData,i,freq,'trapez');
         
         %filtriranje        
-        if abs(hitrost_raw(i)+popravek_hitrosti_num) < 0.05    %filtriranje nizkih frekvenc
+        if abs(hitrost_raw(i)+popravek_hitrosti) < 0.05    %filtriranje nizkih frekvenc
             hitrost(i) = 0.0;
         else
             hitrost(i) = hitrost_raw(i);

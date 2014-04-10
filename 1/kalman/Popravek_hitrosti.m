@@ -1,21 +1,21 @@
 function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Popravek_hitrosti( pospesek, data, i, firstRun, iteracija_gibanja, zadetekMejeSlike)
     persistent ponavljajoca_vrednost;
     persistent st_ponavljanja;
-    persistent popravek;
     persistent predznak;
+    global popravek_hitrosti_num;
     pragPonavljanja = 40;
     
     if firstRun == 1
         ponavljajoca_vrednost = 0;
         st_ponavljanja = 0;
-        popravek = 0;
+        popravek_hitrosti_num = 0;
         predznak = 1;
         
         firstRun = 0;
     end
     %vrednost na zaèetku postavim tako, da upoštevam predhodne popravke (zaradi napaène konstantne vrednosti)
-    %(ob prvi iteraciji je popravek 0, torej niè ne vpliva na zaèetku)
-    vhodni_podatek = data(i) + ((-1) * popravek);
+    %(ob prvi iteraciji je popravek_hitrosti_num 0, torej niè ne vpliva na zaèetku)
+    vhodni_podatek = data(i) + ((-1) * popravek_hitrosti_num);
     
     %rezultat v primeru da ne pride do filtriranja
     nova_vrednost = vhodni_podatek;
@@ -33,7 +33,7 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
         if st_ponavljanja > pragPonavljanja
             %potreben je popravek zaradi napaène konstantne hitrost
             %(popravimo na 0)
-            popravek = data(i);
+            popravek_hitrosti_num = data(i);
             
             %s tem povem algoritmu za odstranjevanje "aftereffekta", da se
             %naprave sedaj ne giba
