@@ -50,7 +50,8 @@
 %data = csvread('../../data/gyro13.csv'); %Y
 %data = csvread('../../data/gyro14.csv')
 %data = csvread('../../data/gyro15.csv') %Z
-data = csvread('../../data/gyro16.csv') %Z
+%data = csvread('../../data/gyro16.csv') %Z
+data = csvread('../../data/gyro17.csv') %Z
 
 clear pospesek_raw;
 clear pospesek;

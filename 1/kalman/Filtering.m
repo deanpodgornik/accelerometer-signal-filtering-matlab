@@ -21,7 +21,8 @@ function output_data = Filtering( input_data, i, filter_type, parameters )
                 %Q_a = 0.006; %working
                 %Q_a = 0.02; %working
                 %Q_a = 0.008; %working
-                Q_a = 0.08; %working
+                %Q_a = 0.08; %working
+                Q_a = 0.002; %working
                 
                 %R_a = varianca;
                 %R_a = varianca;
