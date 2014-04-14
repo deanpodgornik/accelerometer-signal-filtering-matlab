@@ -1,9 +1,10 @@
-function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Popravek_hitrosti( pospesek, data, i, firstRun, iteracija_gibanja, zadetekMejeSlike)
+function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Popravek_hitrosti( pospesek, data, data_raw, i, firstRun, iteracija_gibanja, zadetekMejeSlike)
     persistent ponavljajoca_vrednost;
     persistent st_ponavljanja;
     persistent predznak;
     global popravek_hitrosti_num;
     pragPonavljanja = 40;
+    pragPonavljanja_priNicli = 25;
     
     if firstRun == 1
         ponavljajoca_vrednost = 0;
@@ -30,7 +31,9 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
         
         st_ponavljanja = st_ponavljanja + 1;
         
-        if st_ponavljanja > pragPonavljanja
+        %preverim prag popnavljanja. Prog ponavljanja v primeru, da so
+        %vrednosti okoli 0, je nižji
+        if((st_ponavljanja > pragPonavljanja) || (st_ponavljanja > pragPonavljanja_priNicli && abs(ponavljajoca_vrednost)<0.002))
             %potreben je popravek zaradi napaène konstantne hitrost
             %(popravimo na 0)
             popravek_hitrosti_num = data(i);
@@ -50,7 +53,7 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
             end
         else
             %ni potreben popravek konstantne hitrosti
-            [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Popravek_hitrosti_aftereffect(pospesek, i, iteracija_gibanja, predznak, vhodni_podatek, zadetekMejeSlike);
+            [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Popravek_hitrosti_aftereffect(pospesek, i, iteracija_gibanja, predznak, vhodni_podatek, data_raw(i), zadetekMejeSlike);
         end
     else
         %vrednost se ne ponavlja (naprava je v gibanju)
@@ -60,7 +63,7 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
         ponavljajoca_vrednost = vhodni_podatek;
         
         iteracija_gibanja = iteracija_gibanja + 1;
-        [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Popravek_hitrosti_aftereffect(pospesek, i, iteracija_gibanja, predznak, vhodni_podatek, zadetekMejeSlike);
+        [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Popravek_hitrosti_aftereffect(pospesek, i, iteracija_gibanja, predznak, vhodni_podatek, data_raw(i), zadetekMejeSlike);
     end
 end
 

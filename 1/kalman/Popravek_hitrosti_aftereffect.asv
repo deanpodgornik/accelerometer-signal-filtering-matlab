@@ -12,7 +12,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
     prag_potencialnaNapaka_sum = 10;
     faktorSkaliranjaPopravkaNapake = 0.65;
     
-    mod1_spodnji_prag = 0.03;
+    mod1_spodnji_prag = 0.05;
     mod1_zgornji_prag = 0.08;
     mod1_prag_preverjanja = 30;
     mod1_prag_variance = 0.004; %POPRAVI
@@ -76,15 +76,15 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                     iteracija_gibanja = 0;
                 end
             else
-                %{
                 %ni zaznanega trka ob mejo
                 %MODUL 1
                 %Preverjanje hitre spremembe smeri
                 %najprej preverim ali smo v obratni hitrosti, kot je bila
                 %zaèetna smer, ter nato še èe smo znotraj pasa obravnave.
                 (predznak*vhodni_podatek_raw)<0
+                mod1_spodnji_prag < abs(vhodni_podatek_raw)
                 abs(vhodni_podatek_raw) < mod1_zgornji_prag
-                if((predznak*vhodni_podatek_raw)<0 && (abs(vhodni_podatek_raw) < mod1_zgornji_prag))
+                if((predznak*vhodni_podatek_raw)<0 && (mod1_spodnji_prag < abs(vhodni_podatek_raw) && abs(vhodni_podatek_raw) < mod1_zgornji_prag))
                     hitraSpremembaSmeri_st = hitraSpremembaSmeri_st + 1;
                     
                     %prvih 10 meritev ne upoštevam
@@ -94,10 +94,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                         mod1_st = hitraSpremembaSmeri_st - mod1_prag_upostevanjaPasu;
                         hitraSpremembaSmeri_sum = hitraSpremembaSmeri_sum + vhodni_podatek_raw;
 
-                        i
-                        
                         %shranim meritve
-                        mod1_st
                         hitraSpremembaSmeri_queue(mod1_st) = vhodni_podatek_raw;
                         
                         %pogledam, èe je zadostno število iteracij, da preverim
@@ -140,12 +137,9 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                 else
                     %vrednost je izven pasu (ta modul mi ne bo pomagal)
                     hitraSpremembaSmeri_st = 0;
-                    hitraSpremembaSmeri_sum = 0;
-                    hitraSpremembaSmeri_queue = zeros(mod1_prag_preverjanja,1);
                     hitraSpremembaSmeri_avg = 0;
                     hitraSpremembaSmeri_var = 0;
                 end
-                %}
                 
                 %MODUL 2
                 %preverim ali je prišl do napake pri ocenitvi, da ne gre za
