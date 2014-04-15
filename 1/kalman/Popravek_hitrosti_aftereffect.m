@@ -10,6 +10,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
     
     pragNapake = 250;
     prag_potencialnaNapaka_sum = 10;
+    prag_potencialnaNapaka_st = 80;
     faktorSkaliranjaPopravkaNapake = 0.65;
     
     mod1_spodnji_prag = 0.03;
@@ -60,8 +61,9 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                 nova_vrednost = 0;
                 potencialnaNapaka_sum = potencialnaNapaka_sum + abs(vhodni_podatek);
                 
-                %preverim èe smo prekoraèili 
-                if(potencialnaNapaka_sum > prag_potencialnaNapaka_sum)
+                %preverim èe smo prekoraèili mejo, ki nam pove ali je prišlo do spremembe smeri takoj po trku ob mejo
+	            %da se izognem pojavitvi "napake" po daljšem èasu, preverim tudi, da je ta napaka detektirana do iteracije, ki je definirana s pragom prag_potencialnaNapaka_st
+	            if(potencialnaNapaka_sum > prag_potencialnaNapaka_sum && potencialnaNapaka_st < prag_potencialnaNapaka_st)
                     %napaèno sem ocenil, ni šlo le za šum ampak za
                     %spremembo smeri. Napako igroniram (predpostavim da je
                     %zanemarljiva)

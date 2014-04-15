@@ -48,9 +48,10 @@
 %data = csvread('../../data/gyro11.csv');
 %data = csvread('../../data/gyro12.csv'); %Y
 %data = csvread('../../data/gyro13.csv'); %Y
-data = csvread('../../data/gyro14.csv')
+%data = csvread('../../data/gyro14.csv')
 %data = csvread('../../data/gyro15.csv') %Z
 %data = csvread('../../data/gyro16.csv') %Z
+data = csvread('../../data/acc1.csv'); %Y
 
 clear pospesek_raw;
 clear pospesek;
@@ -62,8 +63,8 @@ clear pozicija;
 iteracija_gibanja = 0;
 
 %upoštevam samo acceleracijo po x-osi
-data = data(:,1); %X
-%data = data(:,2); %Y
+%data = data(:,1); %X
+data = data(:,2); %Y
 %data = data(:,3); %Z
 
 %debugging
@@ -109,7 +110,7 @@ gravity = 0;
 
 %doloèim koliko oddaljena je meja slike od izhodišèa
 %mejeSistemaX = 0.10958966816079618;
-mejeSistemaX = 1000000;
+mejeSistemaX = 0.07015211004304888;
 mejeSistemaY = 0.09015211004304888;
 %spremenljivka drži informacijo ali smo zadeli mejo slike ali ne
 zadetekMejeSlike = 0;
