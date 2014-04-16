@@ -18,8 +18,8 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
     mod1_spodnji_prag = 0.03;
     mod1_zgornji_prag = 0.08;
     mod1_prag_preverjanja = 30;
+    mod1_prag_variance = 0.004; %POPRAVI
     mod1_prag_upostevanjaPasu = 10;
-    mod1_prag_variance = 0.0008;
     
     if iteracija_gibanja == 1
         %nastavim predznak (doloèim ali je trenuten premik v pozitivni
@@ -42,13 +42,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
         %podatek vrenem nespremenjen
         nova_vrednost = vhodni_podatek;
     else
-        if(i>1725)
-            i 
-        end
-        if(i>1840)
-            i 
-        end
-        if(i>1815)
+        if(i>250)
             i 
         end
                 

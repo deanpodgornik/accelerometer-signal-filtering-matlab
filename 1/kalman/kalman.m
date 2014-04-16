@@ -42,7 +42,6 @@
 %data = csvread('../../data/gyro5.csv');
 %data = csvread('../../data/gyro6.csv');
 
-%data = csvread('../../data/gyro8.csv');
 %data = csvread('../../data/gyro9.csv');
 %data = csvread('../../data/gyro10.csv'); %Y
 %data = csvread('../../data/gyro11.csv');
@@ -51,7 +50,11 @@
 %data = csvread('../../data/gyro14.csv')
 %data = csvread('../../data/gyro15.csv') %Z
 %data = csvread('../../data/gyro16.csv') %Z
-data = csvread('../../data/acc1.csv'); %Y
+%data = csvread('../../data/acc1.csv'); %Y
+%data = csvread('../../data/acc2.csv');
+%data = csvread('../../data/acc3.csv');
+%data = csvread('../../data/acc4.csv');
+data = csvread('../../data/acc5.csv');
 
 clear pospesek_raw;
 clear pospesek;
@@ -63,8 +66,8 @@ clear pozicija;
 iteracija_gibanja = 0;
 
 %upoštevam samo acceleracijo po x-osi
-%data = data(:,1); %X
-data = data(:,2); %Y
+data = data(:,1); %X
+%data = data(:,2); %Y
 %data = data(:,3); %Z
 
 %debugging
@@ -109,8 +112,7 @@ freq = 1 / t; %50Hz
 gravity = 0;
 
 %doloèim koliko oddaljena je meja slike od izhodišèa
-%mejeSistemaX = 0.10958966816079618;
-mejeSistemaX = 0.07015211004304888;
+mejeSistemaX = 0.10958966816079618;
 mejeSistemaY = 0.09015211004304888;
 %spremenljivka drži informacijo ali smo zadeli mejo slike ali ne
 zadetekMejeSlike = 0;
@@ -143,6 +145,11 @@ for i=1:data_length
     %integracija - hitrost
     if(i-1>0)
         hitrost_raw(i) = hitrost_raw(i-1) + Integration_step(filteredData,i,freq,'trapez');
+        
+        i
+        if(i>1821)
+            i
+        end
         
         %filtriranje nizkih frekvenc
         if abs(hitrost_raw(i)+popravek_hitrosti_num) < 0.05
