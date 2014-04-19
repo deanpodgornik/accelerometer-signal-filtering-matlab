@@ -54,7 +54,11 @@
 %data = csvread('../../data/acc2.csv');
 %data = csvread('../../data/acc3.csv');
 %data = csvread('../../data/acc4.csv');
-data = csvread('../../data/acc5.csv');
+%data = csvread('../../data/acc5.csv');
+%data = csvread('../../data/acc6.csv');
+%data = csvread('../../data/acc7.csv');
+%data = csvread('../../data/acc8.csv');
+
 
 clear pospesek_raw;
 clear pospesek;
@@ -147,12 +151,12 @@ for i=1:data_length
         hitrost_raw(i) = hitrost_raw(i-1) + Integration_step(filteredData,i,freq,'trapez');
         
         i
-        if(i>1821)
+        if(i>400)
             i
         end
         
         %filtriranje nizkih frekvenc
-        if abs(hitrost_raw(i)+popravek_hitrosti_num) < 0.05
+        if abs(hitrost_raw(i)+popravek_hitrosti_num) < 0.04
             hitrost(i) = 0.0;
         else
             hitrost(i) = hitrost_raw(i);

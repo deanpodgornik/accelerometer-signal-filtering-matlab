@@ -3,7 +3,7 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
     persistent st_ponavljanja;
     persistent predznak;
     global popravek_hitrosti_num;
-    pragPonavljanja = 40;
+    pragPonavljanja = 20;
     pragPonavljanja_priNicli = 25;
     
     if firstRun == 1
@@ -23,7 +23,7 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
     
     %preverim ali je na voljo nova ponavljajoèa vrednost    
     %if abs(vhodni_podatek - ponavljajoca_vrednost) < 0.0001
-    if abs(vhodni_podatek - ponavljajoca_vrednost) < 0.001 %znižal sem mejo obravnavanja enakosti, saj na taè naèin dobim enakost med vrednostimi, ki se malo razlikujejo
+    if abs(vhodni_podatek - ponavljajoca_vrednost) < 0.0005 %povišal sem mejo obravnavanja enakosti, saj na taè naèin dobim enakost med vrednostimi, ki se malo razlikujejo
         %najdena ponavljajoèa vrednost (imamo konstantno hitrost - torej naprava miruje)
         
         %s tem omogoèim višji prag iskanja enakosti
