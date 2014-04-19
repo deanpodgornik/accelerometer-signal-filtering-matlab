@@ -57,7 +57,7 @@
 %data = csvread('../../data/acc5.csv');
 %data = csvread('../../data/acc6.csv');
 %data = csvread('../../data/acc7.csv');
-%data = csvread('../../data/acc8.csv');
+data = csvread('../../data/acc8.csv');
 
 
 clear pospesek_raw;
@@ -93,6 +93,8 @@ raw_acceleration = data;
 varianca_a = 1.7346;
 varianca_h = var(source);
 data_length = length(source);
+
+prag_filtriranja_niz_frek = 0.04;
 
 global popravek_hitrosti_num;
 
@@ -156,7 +158,7 @@ for i=1:data_length
         end
         
         %filtriranje nizkih frekvenc
-        if abs(hitrost_raw(i)+popravek_hitrosti_num) < 0.04
+        if abs(hitrost_raw(i)+popravek_hitrosti_num) < prag_filtriranja_niz_frek
             hitrost(i) = 0.0;
         else
             hitrost(i) = hitrost_raw(i);
