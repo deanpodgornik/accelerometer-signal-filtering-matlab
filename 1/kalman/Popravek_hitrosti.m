@@ -3,7 +3,7 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
     persistent st_ponavljanja;
     persistent predznak;
     global popravek_hitrosti_num;
-    pragPonavljanja = 20;
+    pragPonavljanja = 40;
     pragPonavljanja_priNicli = 25;
     
     if firstRun == 1

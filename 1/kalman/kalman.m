@@ -47,17 +47,21 @@
 %data = csvread('../../data/gyro11.csv');
 %data = csvread('../../data/gyro12.csv'); %Y
 %data = csvread('../../data/gyro13.csv'); %Y
-%data = csvread('../../data/gyro14.csv')
 %data = csvread('../../data/gyro15.csv') %Z
 %data = csvread('../../data/gyro16.csv') %Z
 %data = csvread('../../data/acc1.csv'); %Y
+
+
 %data = csvread('../../data/acc2.csv');
 %data = csvread('../../data/acc3.csv');
 %data = csvread('../../data/acc4.csv');
-%data = csvread('../../data/acc5.csv');
 %data = csvread('../../data/acc6.csv');
+
+%data = csvread('../../data/acc8.csv');
+
+%data = csvread('../../data/acc5.csv');
 %data = csvread('../../data/acc7.csv');
-data = csvread('../../data/acc8.csv');
+data = csvread('../../data/gyro14.csv')
 
 
 clear pospesek_raw;
@@ -118,7 +122,8 @@ freq = 1 / t; %50Hz
 gravity = 0;
 
 %doloèim koliko oddaljena je meja slike od izhodišèa
-mejeSistemaX = 0.10958966816079618;
+%mejeSistemaX = 0.10958966816079618;
+mejeSistemaX = 0.20958966816079618;
 mejeSistemaY = 0.09015211004304888;
 %spremenljivka drži informacijo ali smo zadeli mejo slike ali ne
 zadetekMejeSlike = 0;
