@@ -59,9 +59,9 @@
 
 %data = csvread('../../data/acc8.csv');
 
-%data = csvread('../../data/acc5.csv');
+data = csvread('../../data/acc5.csv');
 %data = csvread('../../data/acc7.csv');
-data = csvread('../../data/gyro14.csv')
+%data = csvread('../../data/gyro14.csv')
 
 
 clear pospesek_raw;

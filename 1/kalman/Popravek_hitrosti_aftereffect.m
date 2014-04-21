@@ -194,7 +194,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                 %}
                 
                 %MODUL 2
-                %preverim ali je prišl do napake pri ocenitvi, da ne gre za
+                %preverim ali je prišlo do napake pri ocenitvi, da ne gre za
                 %spremembo smeri
                 if(potencialnaNapaka_st > pragNapake)
                     %napacno sem ocenil. Prišlo je do hitre spremembe smeri.
