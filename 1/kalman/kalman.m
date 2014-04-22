@@ -42,15 +42,15 @@
 %data = csvread('../../data/gyro5.csv');
 %data = csvread('../../data/gyro6.csv');
 
-%data = csvread('../../data/gyro9.csv');
 %data = csvread('../../data/gyro10.csv'); %Y
-%data = csvread('../../data/gyro11.csv');
 %data = csvread('../../data/gyro12.csv'); %Y
 %data = csvread('../../data/gyro13.csv'); %Y
 %data = csvread('../../data/gyro15.csv') %Z
 %data = csvread('../../data/gyro16.csv') %Z
 %data = csvread('../../data/acc1.csv'); %Y
 
+%data = csvread('../../data/gyro9.csv');
+%data = csvread('../../data/gyro11.csv');
 
 %data = csvread('../../data/acc2.csv');
 %data = csvread('../../data/acc3.csv');
@@ -59,9 +59,9 @@
 
 %data = csvread('../../data/acc8.csv');
 
-data = csvread('../../data/acc5.csv');
+%data = csvread('../../data/acc5.csv');
 %data = csvread('../../data/acc7.csv');
-%data = csvread('../../data/gyro14.csv')
+data = csvread('../../data/acc9.csv')
 
 
 clear pospesek_raw;

@@ -31,7 +31,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
     mod1_prag_upostevanjaPasu_error = 20;
     mod1_prag_variance_before = 0.00001; 
     mod1_prag_variance_after  = 0.0001;
-    mod1_prag_variance_error  = 0.00001;
+    mod1_prag_variance_error  = 0.0001;
     
     if iteracija_gibanja == 1
         %nastavim predznak (doloèim ali je trenuten premik v pozitivni
@@ -132,13 +132,12 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                             %shrnaim meritve
                             hitraSpremembaSmeri_queue_before(hitraSpremembaSmeri_st-mod1_prag_upostevanjaPasu_before) = vhodni_podatek_raw;
                         else
-                            mod1_st = hitraSpremembaSmeri_st - mod1_prag_upostevanjaPasu_before - mod1_prag_upostevanjaPasu_after;
-                            
                             if(mod1_st <= mod1_prag_preverjanja)
                                 %drugi sklop meritev
 
                                 %raèunam vsoto, da bom potem lahko izraèunal
                                 %povpreèje ter posledièno varianco
+                                mod1_st = hitraSpremembaSmeri_st - mod1_prag_upostevanjaPasu_before - mod1_prag_upostevanjaPasu_after;
                                 hitraSpremembaSmeri_sum_after = hitraSpremembaSmeri_sum_after + vhodni_podatek_raw;
 
                                 %shranim meritve
@@ -211,40 +210,12 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                                     %shranim meritve
                                     hitraSpremembaSmeri_queue_error(mod1_st) = vhodni_podatek_raw;
                                 else
-                                    mod1_st = mod1_st - 1;
-                                    
                                     %izraèunam varianco
                                     hitraSpremembaSmeri_avg_error = hitraSpremembaSmeri_sum_error / mod1_st;
-                                    for mod1_var_st=1:(mod1_st)
+                                    for mod1_var_st=1:mod1_st
                                         hitraSpremembaSmeri_var_error = hitraSpremembaSmeri_var_error + power((hitraSpremembaSmeri_queue_error(mod1_var_st)-hitraSpremembaSmeri_avg_error),2);
                                     end
-                                    hitraSpremembaSmeri_var_error = hitraSpremembaSmeri_var_error / (mod1_st);
-                                    
-                                    %preverim ali je prišlo do napake
-                                    %ocenitve ali ne
-                                    if(hitraSpremembaSmeri_var_error > mod1_prag_variance_error)
-                                        %prišlo je do hitre spremembe smeri. omogoèim
-                                        %upoštevanje nove smeri (to naredim tako da
-                                        %obrnem zaèetno zaznano smer (torej predznak))
-                                        predznak = predznak * (-1);
-                                        popravek_hitrosti_num = 0;
-                                    end
-                                    
-                                    %zadevo ponastavim, da tako zaènem novo iteracijo
-                                    %preverjanje v tem, modulu
-                                    hitraSpremembaSmeri_st = 0;
-                                    hitraSpremembaSmeri_sum_after = 0;
-                                    hitraSpremembaSmeri_sum_before = 0;
-                                    hitraSpremembaSmeri_sum_error = 0;
-                                    hitraSpremembaSmeri_queue_before = zeros(mod1_prag_upostevanjaPasu_after,1);
-                                    hitraSpremembaSmeri_queue_after = zeros(mod1_prag_preverjanja,1);
-                                    hitraSpremembaSmeri_queue_error = zeros(mod1_prag_preverjanja,1);
-                                    hitraSpremembaSmeri_avg_before = 0;
-                                    hitraSpremembaSmeri_avg_after = 0;
-                                    hitraSpremembaSmeri_avg_error = 0;
-                                    hitraSpremembaSmeri_var_before = 0; 
-                                    hitraSpremembaSmeri_var_after = 0; 
-                                    hitraSpremembaSmeri_var_error = 0; 
+                                    hitraSpremembaSmeri_var_after = hitraSpremembaSmeri_var_after / (mod1_st);
                                 end
                             end
                         end
