@@ -1,6 +1,8 @@
 function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Popravek_hitrosti_aftereffect( pospesek, i, iteracija_gibanja, predznak, vhodni_podatek, vhodni_podatek_raw, zadetekMejeSlike )
-    persistent potencialnaNapaka_sum;
-    persistent potencialnaNapaka_st;
+    persistent potencialnaNapakaPoZadetkuMeje_sum;
+    persistent potencialnaNapakaPoZadetkuMeje_st;
+    %persistent potencialnaNapakaPoZadetkuMeje_queue;
+    %persistent potencialnaNapakaPoZadetkuMeje_var_n;
     
     persistent hitraSpremembaSmeri_st;
     persistent hitraSpremembaSmeri_sum_before;
@@ -19,8 +21,8 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
     global popravek_hitrosti_num;
     
     pragNapake = 250;
-    prag_potencialnaNapaka_sum = 10;
-    prag_potencialnaNapaka_st = 80;
+    prag_potencialnaNapakaPoZadetkuMeje_sum = 10;
+    prag_potencialnaNapakaPoZadetkuMeje_st = 80;
     faktorSkaliranjaPopravkaNapake = 0.65;
     
     mod1_spodnji_prag = 0.03;
@@ -42,8 +44,8 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
             predznak = 1;
         end;
         
-        potencialnaNapaka_sum = 0;
-        potencialnaNapaka_st = 0;
+        potencialnaNapakaPoZadetkuMeje_sum = 0;
+        potencialnaNapakaPoZadetkuMeje_st = 0;
         
         hitraSpremembaSmeri_st = 0;
         hitraSpremembaSmeri_sum_before = 0;
@@ -80,27 +82,30 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
             nova_vrednost = vhodni_podatek;
         else
             %prišlo je do spremembe smeri hitrosti
-            potencialnaNapaka_st = potencialnaNapaka_st + 1;
+            potencialnaNapakaPoZadetkuMeje_st = potencialnaNapakaPoZadetkuMeje_st + 1;
             
             %obvladovanja spremembe smeri ob zadetku v mejo
             if(zadetekMejeSlike==1)
                 %zaznana posledica zadetka meje
                 
                 nova_vrednost = 0;
-                potencialnaNapaka_sum = potencialnaNapaka_sum + abs(vhodni_podatek);
+                potencialnaNapakaPoZadetkuMeje_sum = potencialnaNapakaPoZadetkuMeje_sum + abs(vhodni_podatek);
                 
                 %preverim èe smo prekoraèili mejo, ki nam pove ali je prišlo do spremembe smeri takoj po trku ob mejo
-	            %da se izognem pojavitvi "napake" po daljšem èasu, preverim tudi, da je ta napaka detektirana do iteracije, ki je definirana s pragom prag_potencialnaNapaka_st
-	            if(potencialnaNapaka_sum > prag_potencialnaNapaka_sum && potencialnaNapaka_st < prag_potencialnaNapaka_st)
+	            %da se izognem pojavitvi "napake" po daljšem èasu, preverim tudi, da je ta napaka detektirana do iteracije, ki je definirana s pragom prag_potencialnaNapakaPoZadetkuMeje_st
+	            if(potencialnaNapakaPoZadetkuMeje_sum > prag_potencialnaNapakaPoZadetkuMeje_sum && potencialnaNapakaPoZadetkuMeje_st < prag_potencialnaNapakaPoZadetkuMeje_st)
+                    %izraèunam varianco zadnjih 10-ih meritev
+                    
+                    
                     %napaèno sem ocenil, ni šlo le za šum ampak za
                     %spremembo smeri. Napako igroniram (predpostavim da je
                     %zanemarljiva)
                     nova_vrednost = vhodni_podatek;
-                    
+
                     %odtranim informacijo, da je v stanju obravnavanja
                     %zadetka meje
                     zadetekMejeSlike = 0;
-                    
+
                     %inicializiram zadevo: beležim kot da je prva iteracija
                     %gibanja
                     iteracija_gibanja = 0;
@@ -112,7 +117,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                 %najprej preverim ali smo v obratni hitrosti, kot je bila
                 %zaèetna smer, ter nato še èe smo znotraj pasa obravnave.
                 %OPOMBA: èe je prišlo do spremembe smeri moram preveriti na vhodnem podatku s popravkom (vhodni_podatek)
-                %%{
+                %{
                 i
                 (predznak*vhodni_podatek_raw)<0
                 if((predznak*vhodni_podatek_raw)<0)
@@ -270,23 +275,23 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                 %MODUL 2
                 %preverim ali je prišlo do napake pri ocenitvi, da ne gre za
                 %spremembo smeri
-                if(potencialnaNapaka_st > pragNapake)
+                if(potencialnaNapakaPoZadetkuMeje_st > pragNapake)
                     %napacno sem ocenil. Prišlo je do hitre spremembe smeri.
                     %Novih vrednosti ne bom veè postavil na 0
                     nova_vrednost = vhodni_podatek;
 
                     %preverim ali popravek sploh obstaja
-                    if abs(potencialnaNapaka_sum) > 0                    
-                        nova_vrednost = nova_vrednost + (potencialnaNapaka_sum * faktorSkaliranjaPopravkaNapake);
+                    if abs(potencialnaNapakaPoZadetkuMeje_sum) > 0
+                        nova_vrednost = nova_vrednost + (potencialnaNapakaPoZadetkuMeje_sum * faktorSkaliranjaPopravkaNapake);
                         %ponastavitev sum-napaka (inicializacija za kasnejše
                         %potencialne napake)
-                        potencialnaNapaka_sum = 0;
+                        potencialnaNapakaPoZadetkuMeje_sum = 0;
                     end
                 else
                     %trenutno smo še mnenja, da je sprememba smeri le posledica
                     %šuma in NE dejanske spremembe smeri gibanja naprave
                     nova_vrednost = 0;
-                    potencialnaNapaka_sum = potencialnaNapaka_sum + vhodni_podatek; %pravilno da NI abs, saj tako upoštevam visoko varianco (ob prehodu èez 0). Abs pa uporabim pri preverjanju
+                    potencialnaNapakaPoZadetkuMeje_sum = potencialnaNapakaPoZadetkuMeje_sum + vhodni_podatek; %pravilno da NI abs, saj tako upoštevam visoko varianco (ob prehodu èez 0). Abs pa uporabim pri preverjanju
                 end 
             end            
         end

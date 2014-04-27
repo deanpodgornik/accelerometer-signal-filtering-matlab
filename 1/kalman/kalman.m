@@ -61,7 +61,13 @@
 
 %data = csvread('../../data/acc5.csv');
 %data = csvread('../../data/acc7.csv');
-data = csvread('../../data/acc9.csv')
+%data = csvread('../../data/acc9.csv')
+%data = csvread('../../data/acc10.csv')
+%data = csvread('../../data/acc11.csv')
+
+%data = csvread('../../data/acc12.csv')
+%data = csvread('../../data/acc13.csv')
+data = csvread('../../data/acc14.csv')
 
 
 clear pospesek_raw;
@@ -122,8 +128,7 @@ freq = 1 / t; %50Hz
 gravity = 0;
 
 %doloèim koliko oddaljena je meja slike od izhodišèa
-%mejeSistemaX = 0.10958966816079618;
-mejeSistemaX = 0.20958966816079618;
+mejeSistemaX = 0.10958966816079618;
 mejeSistemaY = 0.09015211004304888;
 %spremenljivka drži informacijo ali smo zadeli mejo slike ali ne
 zadetekMejeSlike = 0;

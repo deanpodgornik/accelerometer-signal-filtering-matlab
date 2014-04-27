@@ -31,6 +31,11 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
         
         st_ponavljanja = st_ponavljanja + 1;
         
+        if(i>=625)
+           i
+           i
+        end
+        
         %preverim prag popnavljanja. Prog ponavljanja v primeru, da so
         %vrednosti okoli 0, je nižji
         if((st_ponavljanja > pragPonavljanja) || (st_ponavljanja > pragPonavljanja_priNicli && abs(ponavljajoca_vrednost)<0.002))
@@ -57,6 +62,7 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
         end
     else
         %vrednost se ne ponavlja (naprava je v gibanju)
+        i
         
         st_ponavljanja = 0;
         %nastavim novo vrednost, ki se mora ponavljati
