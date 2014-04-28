@@ -65,9 +65,9 @@
 %data = csvread('../../data/acc10.csv')
 %data = csvread('../../data/acc11.csv')
 
-%data = csvread('../../data/acc12.csv')
+data = csvread('../../data/acc12.csv')
 %data = csvread('../../data/acc13.csv')
-data = csvread('../../data/acc14.csv')
+%data = csvread('../../data/acc14.csv')
 
 
 clear pospesek_raw;

@@ -118,7 +118,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                             %gre le za veèjo napako po ustavljanju
 
                             %doloèim nov popravek
-                            popravek_hitrosti_num = vhodni_podatek_raw;
+                            popravek_hitrosti_num = vhodni_podatek;
                             
                             nova_vrednost = 0;
                         else
