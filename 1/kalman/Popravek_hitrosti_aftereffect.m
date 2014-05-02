@@ -20,7 +20,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
     global popravek_hitrosti_num;
     
     pragNapake = 250;
-    prag_potencialnaNapakaPoZadetkuMeje_cum_sum = 10;
+    prag_potencialnaNapakaPoZadetkuMeje_cum_sum = 7;
     prag_potencialnaNapakaPoZadetkuMeje_st = 80;
     potencialnaNapakaPoZadetkuMeje_var_n = 10;
     faktorSkaliranjaPopravkaNapake = 0.65;
@@ -65,13 +65,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
         %podatek vrenem nespremenjen
         nova_vrednost = vhodni_podatek;
     else
-        if(i>1725)
-            i 
-        end
-        if(i>1840)
-            i 
-        end
-        if(i>1815)
+        if(i>220)
             i 
         end
                 
@@ -149,12 +143,13 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                 end
             else
                 %ni zaznanega trka ob mejo
+                
                 %MODUL 1
                 %Preverjanje hitre spremembe smeri
                 %najprej preverim ali smo v obratni hitrosti, kot je bila
                 %zaèetna smer, ter nato še èe smo znotraj pasa obravnave.
                 %OPOMBA: èe je prišlo do spremembe smeri moram preveriti na vhodnem podatku s popravkom (vhodni_podatek)
-                %{
+                %%{
                 i
                 (predznak*vhodni_podatek_raw)<0
                 if((predznak*vhodni_podatek_raw)<0)

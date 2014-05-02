@@ -23,7 +23,9 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
     
     %preverim ali je na voljo nova ponavljajoèa vrednost    
     %if abs(vhodni_podatek - ponavljajoca_vrednost) < 0.0001
-    if abs(vhodni_podatek - ponavljajoca_vrednost) < 0.0005 %povišal sem mejo obravnavanja enakosti, saj na taè naèin dobim enakost med vrednostimi, ki se malo razlikujejo
+    %povišal sem mejo obravnavanja enakosti, saj na taè naèin dobim enakost med vrednostimi, ki se malo razlikujejo
+        %preverjanje (za ALI) dodano zaradi težave z detekcijo ponavljajoèe vrednosti ob prehodu v obmoèje nizkih frekvenc
+    if ((abs(vhodni_podatek - ponavljajoca_vrednost) < 0.0005) || (vhodni_podatek==0 && data_raw(i)<0.04 && abs(data_raw(i) - ponavljajoca_vrednost) < 0.0005))
         %najdena ponavljajoèa vrednost (imamo konstantno hitrost - torej naprava miruje)
         
         %s tem omogoèim višji prag iskanja enakosti
