@@ -3,6 +3,8 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
     persistent potencialnaNapakaPoZadetkuMeje_st;
     persistent potencialnaNapakaPoZadetkuMeje_queue;
     
+    persistent sumPoSpremembiSmeri;
+    
     persistent hitraSpremembaSmeri_st;
     persistent hitraSpremembaSmeri_sum_before;
     persistent hitraSpremembaSmeri_sum_after;
@@ -24,6 +26,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
     prag_potencialnaNapakaPoZadetkuMeje_st = 80;
     potencialnaNapakaPoZadetkuMeje_var_n = 10;
     faktorSkaliranjaPopravkaNapake = 0.65;
+    prag_sumPoSpremembiSmeri = 0.3;
     
     mod1_spodnji_prag = 0.03;
     mod1_zgornji_prag = 0.08;
@@ -43,6 +46,8 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
         else
             predznak = 1;
         end;
+        
+        sumPoSpremembiSmeri = 0;
         
         potencialnaNapakaPoZadetkuMeje_cum_sum = 0;
         potencialnaNapakaPoZadetkuMeje_st = 0;
@@ -65,7 +70,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
         %podatek vrenem nespremenjen
         nova_vrednost = vhodni_podatek;
     else
-        if(i>220)
+        if(i>=262)
             i 
         end
                 
@@ -75,143 +80,222 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
         if vhodni_podatek*predznak > 0 && zadetekMejeSlike==0
             %ni spremembe smeri (zadeve ne filtriram)
             nova_vrednost = vhodni_podatek;
-        else
-            %prišlo je do spremembe smeri hitrosti
-            potencialnaNapakaPoZadetkuMeje_st = potencialnaNapakaPoZadetkuMeje_st + 1;
             
-            %obvladovanja spremembe smeri ob zadetku v mejo
-            if(zadetekMejeSlike==1)
-                %zaznana posledica zadetka meje
+            %vsota, ki se beleži od spremembe smeri dalje
+            sumPoSpremembiSmeri = sumPoSpremembiSmeri + abs(nova_vrednost);
+            sumPoSpremembiSmeri
+        else
+            %najprej preverim ali je sprememba smeri upravièena 
+            %(vsota pred spremembo smeri mora biti dovolj velika, ker sicer gre za napako filtriranja nizkih frekvenc)
+            
+            i
+            sumPoSpremembiSmeri
+            
+            if(sumPoSpremembiSmeri > 0 && sumPoSpremembiSmeri < prag_sumPoSpremembiSmeri)
+                %spremembo smeri obravnavam kot napako filtriranja nizkih
+                %frekvenc
+                sumPoSpremembiSmeri = 0;
                 
-                nova_vrednost = 0;
-                potencialnaNapakaPoZadetkuMeje_cum_sum = potencialnaNapakaPoZadetkuMeje_cum_sum + abs(vhodni_podatek);
+                %novo smer doloèim
+                predznak = predznak * (-1);
                 
-                %preverim èe smo prekoraèili mejo, ki nam pove ali je prišlo do spremembe smeri takoj po trku ob mejo
-	            %da se izognem pojavitvi "napake" po daljšem èasu, preverim tudi, da je ta napaka detektirana do iteracije, ki je definirana s pragom prag_potencialnaNapakaPoZadetkuMeje_st
-	            if(potencialnaNapakaPoZadetkuMeje_st < prag_potencialnaNapakaPoZadetkuMeje_st)
-                    if(potencialnaNapakaPoZadetkuMeje_cum_sum > prag_potencialnaNapakaPoZadetkuMeje_cum_sum)
-                        %izraèunam varianco zadnjih 10-ih meritev
+                nova_vrednost = vhodni_podatek;
+            else
+                %sprememba smeri je upravièena
+            
+                %prišlo je do spremembe smeri hitrosti
+                potencialnaNapakaPoZadetkuMeje_st = potencialnaNapakaPoZadetkuMeje_st + 1;
 
-                        potencialnaNapakaPoZadetkuMeje_sum = 0;
-                        for potencialnaNapakaPoZadetkuMeje_sum_st = 1 : potencialnaNapakaPoZadetkuMeje_var_n
-                            potencialnaNapakaPoZadetkuMeje_sum = potencialnaNapakaPoZadetkuMeje_sum + potencialnaNapakaPoZadetkuMeje_queue(potencialnaNapakaPoZadetkuMeje_st - potencialnaNapakaPoZadetkuMeje_sum_st);
-                        end
-                        potencialnaNapakaPoZadetkuMeje_avg = potencialnaNapakaPoZadetkuMeje_sum / potencialnaNapakaPoZadetkuMeje_var_n;
-                        
-                        potencialnaNapakaPoZadetkuMeje_var = 0;
-                        for potencialnaNapakaPoZadetkuMeje_sum_st = 1 : potencialnaNapakaPoZadetkuMeje_var_n
-                            tmp_var_st = potencialnaNapakaPoZadetkuMeje_st - potencialnaNapakaPoZadetkuMeje_sum_st;
-                            tmp_var_st
-                            potencialnaNapakaPoZadetkuMeje_var = potencialnaNapakaPoZadetkuMeje_var + power((potencialnaNapakaPoZadetkuMeje_queue(tmp_var_st)-potencialnaNapakaPoZadetkuMeje_avg),2);
-                        end
-                        potencialnaNapakaPoZadetkuMeje_var = potencialnaNapakaPoZadetkuMeje_var / (potencialnaNapakaPoZadetkuMeje_var_n);
-                        potencialnaNapakaPoZadetkuMeje_var
-                        i
-                        
-                        if(potencialnaNapakaPoZadetkuMeje_var < 0.00001)
-                            %gre le za veèjo napako po ustavljanju
+                %inicializiram vsoto, ki se beleži od spremembe smeri dalje
+                sumPoSpremembiSmeri = 0;
 
-                            %doloèim nov popravek
-                            popravek_hitrosti_num = vhodni_podatek_raw;
-                            
-                            nova_vrednost = 0;
+                %obvladovanja spremembe smeri ob zadetku v mejo
+                if(zadetekMejeSlike==1)
+                    %zaznana posledica zadetka meje
+
+                    nova_vrednost = 0;
+                    potencialnaNapakaPoZadetkuMeje_cum_sum = potencialnaNapakaPoZadetkuMeje_cum_sum + abs(vhodni_podatek);
+
+                    %preverim èe smo prekoraèili mejo, ki nam pove ali je prišlo do spremembe smeri takoj po trku ob mejo
+                    %da se izognem pojavitvi "napake" po daljšem èasu, preverim tudi, da je ta napaka detektirana do iteracije, ki je definirana s pragom prag_potencialnaNapakaPoZadetkuMeje_st
+                    if(potencialnaNapakaPoZadetkuMeje_st < prag_potencialnaNapakaPoZadetkuMeje_st)
+                        if(potencialnaNapakaPoZadetkuMeje_cum_sum > prag_potencialnaNapakaPoZadetkuMeje_cum_sum)
+                            %izraèunam varianco zadnjih 10-ih meritev
+
+                            potencialnaNapakaPoZadetkuMeje_sum = 0;
+                            for potencialnaNapakaPoZadetkuMeje_sum_st = 1 : potencialnaNapakaPoZadetkuMeje_var_n
+                                potencialnaNapakaPoZadetkuMeje_sum = potencialnaNapakaPoZadetkuMeje_sum + potencialnaNapakaPoZadetkuMeje_queue(potencialnaNapakaPoZadetkuMeje_st - potencialnaNapakaPoZadetkuMeje_sum_st);
+                            end
+                            potencialnaNapakaPoZadetkuMeje_avg = potencialnaNapakaPoZadetkuMeje_sum / potencialnaNapakaPoZadetkuMeje_var_n;
+
+                            potencialnaNapakaPoZadetkuMeje_var = 0;
+                            for potencialnaNapakaPoZadetkuMeje_sum_st = 1 : potencialnaNapakaPoZadetkuMeje_var_n
+                                tmp_var_st = potencialnaNapakaPoZadetkuMeje_st - potencialnaNapakaPoZadetkuMeje_sum_st;
+                                tmp_var_st
+                                potencialnaNapakaPoZadetkuMeje_var = potencialnaNapakaPoZadetkuMeje_var + power((potencialnaNapakaPoZadetkuMeje_queue(tmp_var_st)-potencialnaNapakaPoZadetkuMeje_avg),2);
+                            end
+                            potencialnaNapakaPoZadetkuMeje_var = potencialnaNapakaPoZadetkuMeje_var / (potencialnaNapakaPoZadetkuMeje_var_n);
+                            potencialnaNapakaPoZadetkuMeje_var
+                            i
+
+                            if(potencialnaNapakaPoZadetkuMeje_var < 0.00001)
+                                %gre le za veèjo napako po ustavljanju
+
+                                %doloèim nov popravek
+                                popravek_hitrosti_num = vhodni_podatek_raw;
+
+                                nova_vrednost = 0;
+                            else
+                                %napaèno sem ocenil, ni šlo le za šum ampak za
+                                %spremembo smeri. Napako igroniram (predpostavim da je
+                                %zanemarljiva)
+                                nova_vrednost = vhodni_podatek;
+                            end
+
+                            %INICIALIZIRAM ZADEVO
+
+                            %inicializiram zadevo: beležim kot da je prva iteracija gibanja
+                            iteracija_gibanja = 0;
+
+                            %odtranim informacijo, da je v stanju obravnavanja
+                            %zadetka meje
+                            zadetekMejeSlike = 0;
                         else
-                            %napaèno sem ocenil, ni šlo le za šum ampak za
-                            %spremembo smeri. Napako igroniram (predpostavim da je
-                            %zanemarljiva)
-                            nova_vrednost = vhodni_podatek;
+                            %dodam meritve v seznam prejšnjih meritev
+                            potencialnaNapakaPoZadetkuMeje_queue(potencialnaNapakaPoZadetkuMeje_st) = vhodni_podatek_raw;
                         end
-
-                        %INICIALIZIRAM ZADEVO
+                    else
+                        %nisem detektiral napak znotraj doloèenega intervala za
+                        %preverjanje napak
 
                         %inicializiram zadevo: beležim kot da je prva iteracija gibanja
                         iteracija_gibanja = 0;
-                        
-                        %odtranim informacijo, da je v stanju obravnavanja
-                        %zadetka meje
-                        zadetekMejeSlike = 0;
-                    else
-                        %dodam meritve v seznam prejšnjih meritev
-                        potencialnaNapakaPoZadetkuMeje_queue(potencialnaNapakaPoZadetkuMeje_st) = vhodni_podatek_raw;
                     end
                 else
-                    %nisem detektiral napak znotraj doloèenega intervala za
-                    %preverjanje napak
-                    
-                    %inicializiram zadevo: beležim kot da je prva iteracija gibanja
-                    iteracija_gibanja = 0;
-                end
-            else
-                %ni zaznanega trka ob mejo
-                
-                %MODUL 1
-                %Preverjanje hitre spremembe smeri
-                %najprej preverim ali smo v obratni hitrosti, kot je bila
-                %zaèetna smer, ter nato še èe smo znotraj pasa obravnave.
-                %OPOMBA: èe je prišlo do spremembe smeri moram preveriti na vhodnem podatku s popravkom (vhodni_podatek)
-                %%{
-                i
-                (predznak*vhodni_podatek_raw)<0
-                if((predznak*vhodni_podatek_raw)<0)
-                    hitraSpremembaSmeri_st = hitraSpremembaSmeri_st + 1;
-                    
-                    %prvih n meritev ne upoštevam
-                    if(hitraSpremembaSmeri_st > mod1_prag_upostevanjaPasu_before)
-                        if(hitraSpremembaSmeri_st <= mod1_prag_upostevanjaPasu_before + mod1_prag_upostevanjaPasu_after)
-                            %prvi sklop meritev
+                    %ni zaznanega trka ob mejo
 
-                            %izraèunam vsoto da bom lahko nato izraèunal
-                            %varianco
-                            i
-                            vhodni_podatek_raw
-                            hitraSpremembaSmeri_sum_before = hitraSpremembaSmeri_sum_before + vhodni_podatek_raw;
+                    %MODUL 1
+                    %Preverjanje hitre spremembe smeri
+                    %najprej preverim ali smo v obratni hitrosti, kot je bila
+                    %zaèetna smer, ter nato še èe smo znotraj pasa obravnave.
+                    %OPOMBA: èe je prišlo do spremembe smeri moram preveriti na vhodnem podatku s popravkom (vhodni_podatek)
+                    %%{
+                    i
+                    (predznak*vhodni_podatek_raw)<0
+                    if((predznak*vhodni_podatek_raw)<0)
+                        hitraSpremembaSmeri_st = hitraSpremembaSmeri_st + 1;
 
-                            %shrnaim meritve
-                            hitraSpremembaSmeri_queue_before(hitraSpremembaSmeri_st-mod1_prag_upostevanjaPasu_before) = vhodni_podatek_raw;
-                        else
-                            mod1_st = hitraSpremembaSmeri_st - mod1_prag_upostevanjaPasu_before - mod1_prag_upostevanjaPasu_after;
-                            
-                            if(mod1_st <= mod1_prag_preverjanja)
-                                %drugi sklop meritev
+                        %prvih n meritev ne upoštevam
+                        if(hitraSpremembaSmeri_st > mod1_prag_upostevanjaPasu_before)
+                            if(hitraSpremembaSmeri_st <= mod1_prag_upostevanjaPasu_before + mod1_prag_upostevanjaPasu_after)
+                                %prvi sklop meritev
 
-                                %raèunam vsoto, da bom potem lahko izraèunal
-                                %povpreèje ter posledièno varianco
-                                hitraSpremembaSmeri_sum_after = hitraSpremembaSmeri_sum_after + vhodni_podatek_raw;
+                                %izraèunam vsoto da bom lahko nato izraèunal
+                                %varianco
+                                i
+                                vhodni_podatek_raw
+                                hitraSpremembaSmeri_sum_before = hitraSpremembaSmeri_sum_before + vhodni_podatek_raw;
 
-                                %shranim meritve
-                                hitraSpremembaSmeri_queue_after(mod1_st) = vhodni_podatek_raw;
+                                %shrnaim meritve
+                                hitraSpremembaSmeri_queue_before(hitraSpremembaSmeri_st-mod1_prag_upostevanjaPasu_before) = vhodni_podatek_raw;
+                            else
+                                mod1_st = hitraSpremembaSmeri_st - mod1_prag_upostevanjaPasu_before - mod1_prag_upostevanjaPasu_after;
 
-                                %pogledam, èe je zadostno število iteracij, da preverim
-                                %spremembo smeri
-                                if(mod1_st >= mod1_prag_preverjanja)
-                                    %izraèunam varianco prvega dela
-                                    hitraSpremembaSmeri_avg_before = hitraSpremembaSmeri_sum_before / mod1_prag_upostevanjaPasu_after;
-                                    for mod1_var_st=1:mod1_prag_upostevanjaPasu_after
-                                        hitraSpremembaSmeri_queue_before(mod1_var_st)
-                                        hitraSpremembaSmeri_var_before = hitraSpremembaSmeri_var_before + power((hitraSpremembaSmeri_queue_before(mod1_var_st)-hitraSpremembaSmeri_avg_before),2);
+                                if(mod1_st <= mod1_prag_preverjanja)
+                                    %drugi sklop meritev
+
+                                    %raèunam vsoto, da bom potem lahko izraèunal
+                                    %povpreèje ter posledièno varianco
+                                    hitraSpremembaSmeri_sum_after = hitraSpremembaSmeri_sum_after + vhodni_podatek_raw;
+
+                                    %shranim meritve
+                                    hitraSpremembaSmeri_queue_after(mod1_st) = vhodni_podatek_raw;
+
+                                    %pogledam, èe je zadostno število iteracij, da preverim
+                                    %spremembo smeri
+                                    if(mod1_st >= mod1_prag_preverjanja)
+                                        %izraèunam varianco prvega dela
+                                        hitraSpremembaSmeri_avg_before = hitraSpremembaSmeri_sum_before / mod1_prag_upostevanjaPasu_after;
+                                        for mod1_var_st=1:mod1_prag_upostevanjaPasu_after
+                                            hitraSpremembaSmeri_queue_before(mod1_var_st)
+                                            hitraSpremembaSmeri_var_before = hitraSpremembaSmeri_var_before + power((hitraSpremembaSmeri_queue_before(mod1_var_st)-hitraSpremembaSmeri_avg_before),2);
+                                        end
+                                        hitraSpremembaSmeri_var_before = hitraSpremembaSmeri_var_before / (mod1_prag_upostevanjaPasu_after);
+
+                                        %izraèunam varianco drugega dela
+                                        hitraSpremembaSmeri_avg_after = hitraSpremembaSmeri_sum_after / mod1_st;
+                                        for mod1_var_st=1:mod1_st
+                                            hitraSpremembaSmeri_var_after = hitraSpremembaSmeri_var_after + power((hitraSpremembaSmeri_queue_after(mod1_var_st)-hitraSpremembaSmeri_avg_after),2);
+                                        end
+                                        hitraSpremembaSmeri_var_after = hitraSpremembaSmeri_var_after / (mod1_st);
+
+                                        %preverim ali je prišlo do spremembe smeri ali ne
+                                        %(ali gre le za šum)
+
+                                        i
+                                        hitraSpremembaSmeri_var_before
+                                        hitraSpremembaSmeri_var_after
+
+                                        if(hitraSpremembaSmeri_var_before < mod1_prag_variance_before && hitraSpremembaSmeri_var_after > mod1_prag_variance_after)
+                                            %prišlo je do hitre spremembe smeri. omogoèim
+                                            %upoštevanje nove smeri (to naredim tako da
+                                            %obrnem zaèetno zaznano smer (torej predznak))
+                                            predznak = predznak * (-1);
+                                            popravek_hitrosti_num = 0;
+
+                                            %zadevo ponastavim, da tako zaènem novo iteracijo
+                                            %preverjanje v tem, modulu
+                                            hitraSpremembaSmeri_st = 0;
+                                            hitraSpremembaSmeri_sum_after = 0;
+                                            hitraSpremembaSmeri_sum_before = 0;
+                                            hitraSpremembaSmeri_sum_error = 0;
+                                            hitraSpremembaSmeri_queue_before = zeros(mod1_prag_upostevanjaPasu_after,1);
+                                            hitraSpremembaSmeri_queue_after = zeros(mod1_prag_preverjanja,1);
+                                            hitraSpremembaSmeri_queue_error = zeros(mod1_prag_preverjanja,1);
+                                            hitraSpremembaSmeri_avg_before = 0;
+                                            hitraSpremembaSmeri_avg_after = 0;
+                                            hitraSpremembaSmeri_avg_error = 0;
+                                            hitraSpremembaSmeri_var_before = 0; 
+                                            hitraSpremembaSmeri_var_after = 0; 
+                                            hitraSpremembaSmeri_var_error = 0; 
+                                        else
+                                            %nisem detektiral hitre spremembe
+                                            %smeri. Preveriè èez n itercij ali
+                                            %sem se zmotil
+
+                                        end                                
                                     end
-                                    hitraSpremembaSmeri_var_before = hitraSpremembaSmeri_var_before / (mod1_prag_upostevanjaPasu_after);
+                                else
+                                    %tretji sklop meritev
 
-                                    %izraèunam varianco drugega dela
-                                    hitraSpremembaSmeri_avg_after = hitraSpremembaSmeri_sum_after / mod1_st;
-                                    for mod1_var_st=1:mod1_st
-                                        hitraSpremembaSmeri_var_after = hitraSpremembaSmeri_var_after + power((hitraSpremembaSmeri_queue_after(mod1_var_st)-hitraSpremembaSmeri_avg_after),2);
-                                    end
-                                    hitraSpremembaSmeri_var_after = hitraSpremembaSmeri_var_after / (mod1_st);
+                                    %raèunam vsoto, da bom potem lahko izraèunal
+                                    %povpreèje ter posledièno varianco
+                                    mod1_st = hitraSpremembaSmeri_st - mod1_prag_upostevanjaPasu_before - mod1_prag_upostevanjaPasu_after - mod1_prag_preverjanja;
 
-                                    %preverim ali je prišlo do spremembe smeri ali ne
-                                    %(ali gre le za šum)
+                                    if(mod1_st <= mod1_prag_upostevanjaPasu_error)
+                                        hitraSpremembaSmeri_sum_error = hitraSpremembaSmeri_sum_error + vhodni_podatek_raw;
 
-                                    i
-                                    hitraSpremembaSmeri_var_before
-                                    hitraSpremembaSmeri_var_after
+                                        %shranim meritve
+                                        hitraSpremembaSmeri_queue_error(mod1_st) = vhodni_podatek_raw;
+                                    else
+                                        mod1_st = mod1_st - 1;
 
-                                    if(hitraSpremembaSmeri_var_before < mod1_prag_variance_before && hitraSpremembaSmeri_var_after > mod1_prag_variance_after)
-                                        %prišlo je do hitre spremembe smeri. omogoèim
-                                        %upoštevanje nove smeri (to naredim tako da
-                                        %obrnem zaèetno zaznano smer (torej predznak))
-                                        predznak = predznak * (-1);
-                                        popravek_hitrosti_num = 0;
+                                        %izraèunam varianco
+                                        hitraSpremembaSmeri_avg_error = hitraSpremembaSmeri_sum_error / mod1_st;
+                                        for mod1_var_st=1:(mod1_st)
+                                            hitraSpremembaSmeri_var_error = hitraSpremembaSmeri_var_error + power((hitraSpremembaSmeri_queue_error(mod1_var_st)-hitraSpremembaSmeri_avg_error),2);
+                                        end
+                                        hitraSpremembaSmeri_var_error = hitraSpremembaSmeri_var_error / (mod1_st);
+
+                                        %preverim ali je prišlo do napake
+                                        %ocenitve ali ne
+                                        if(hitraSpremembaSmeri_var_error > mod1_prag_variance_error)
+                                            %prišlo je do hitre spremembe smeri. omogoèim
+                                            %upoštevanje nove smeri (to naredim tako da
+                                            %obrnem zaèetno zaznano smer (torej predznak))
+                                            predznak = predznak * (-1);
+                                            popravek_hitrosti_num = 0;
+                                        end
 
                                         %zadevo ponastavim, da tako zaènem novo iteracijo
                                         %preverjanje v tem, modulu
@@ -228,104 +312,51 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                                         hitraSpremembaSmeri_var_before = 0; 
                                         hitraSpremembaSmeri_var_after = 0; 
                                         hitraSpremembaSmeri_var_error = 0; 
-                                    else
-                                        %nisem detektiral hitre spremembe
-                                        %smeri. Preveriè èez n itercij ali
-                                        %sem se zmotil
-                                        
-                                    end                                
-                                end
-                            else
-                                %tretji sklop meritev
-                               
-                                %raèunam vsoto, da bom potem lahko izraèunal
-                                %povpreèje ter posledièno varianco
-                                mod1_st = hitraSpremembaSmeri_st - mod1_prag_upostevanjaPasu_before - mod1_prag_upostevanjaPasu_after - mod1_prag_preverjanja;
-                                
-                                if(mod1_st <= mod1_prag_upostevanjaPasu_error)
-                                    hitraSpremembaSmeri_sum_error = hitraSpremembaSmeri_sum_error + vhodni_podatek_raw;
-
-                                    %shranim meritve
-                                    hitraSpremembaSmeri_queue_error(mod1_st) = vhodni_podatek_raw;
-                                else
-                                    mod1_st = mod1_st - 1;
-                                    
-                                    %izraèunam varianco
-                                    hitraSpremembaSmeri_avg_error = hitraSpremembaSmeri_sum_error / mod1_st;
-                                    for mod1_var_st=1:(mod1_st)
-                                        hitraSpremembaSmeri_var_error = hitraSpremembaSmeri_var_error + power((hitraSpremembaSmeri_queue_error(mod1_var_st)-hitraSpremembaSmeri_avg_error),2);
                                     end
-                                    hitraSpremembaSmeri_var_error = hitraSpremembaSmeri_var_error / (mod1_st);
-                                    
-                                    %preverim ali je prišlo do napake
-                                    %ocenitve ali ne
-                                    if(hitraSpremembaSmeri_var_error > mod1_prag_variance_error)
-                                        %prišlo je do hitre spremembe smeri. omogoèim
-                                        %upoštevanje nove smeri (to naredim tako da
-                                        %obrnem zaèetno zaznano smer (torej predznak))
-                                        predznak = predznak * (-1);
-                                        popravek_hitrosti_num = 0;
-                                    end
-                                    
-                                    %zadevo ponastavim, da tako zaènem novo iteracijo
-                                    %preverjanje v tem, modulu
-                                    hitraSpremembaSmeri_st = 0;
-                                    hitraSpremembaSmeri_sum_after = 0;
-                                    hitraSpremembaSmeri_sum_before = 0;
-                                    hitraSpremembaSmeri_sum_error = 0;
-                                    hitraSpremembaSmeri_queue_before = zeros(mod1_prag_upostevanjaPasu_after,1);
-                                    hitraSpremembaSmeri_queue_after = zeros(mod1_prag_preverjanja,1);
-                                    hitraSpremembaSmeri_queue_error = zeros(mod1_prag_preverjanja,1);
-                                    hitraSpremembaSmeri_avg_before = 0;
-                                    hitraSpremembaSmeri_avg_after = 0;
-                                    hitraSpremembaSmeri_avg_error = 0;
-                                    hitraSpremembaSmeri_var_before = 0; 
-                                    hitraSpremembaSmeri_var_after = 0; 
-                                    hitraSpremembaSmeri_var_error = 0; 
                                 end
                             end
                         end
+                    else
+                        %vrednost je izven pasu (ta modul mi ne bo pomagal)
+                        hitraSpremembaSmeri_st = 0;
+                        hitraSpremembaSmeri_sum_after = 0;
+                        hitraSpremembaSmeri_sum_before = 0;
+                        hitraSpremembaSmeri_sum_error = 0;
+                        hitraSpremembaSmeri_queue_before = zeros(mod1_prag_upostevanjaPasu_after,1);
+                        hitraSpremembaSmeri_queue_after = zeros(mod1_prag_preverjanja,1);
+                        hitraSpremembaSmeri_queue_error = zeros(mod1_prag_preverjanja,1);
+                        hitraSpremembaSmeri_avg_before = 0;
+                        hitraSpremembaSmeri_avg_after = 0;
+                        hitraSpremembaSmeri_avg_error = 0;
+                        hitraSpremembaSmeri_var_before = 0;
+                        hitraSpremembaSmeri_var_after = 0;
+                        hitraSpremembaSmeri_var_error = 0;
                     end
-                else
-                    %vrednost je izven pasu (ta modul mi ne bo pomagal)
-                    hitraSpremembaSmeri_st = 0;
-                    hitraSpremembaSmeri_sum_after = 0;
-                    hitraSpremembaSmeri_sum_before = 0;
-                    hitraSpremembaSmeri_sum_error = 0;
-                    hitraSpremembaSmeri_queue_before = zeros(mod1_prag_upostevanjaPasu_after,1);
-                    hitraSpremembaSmeri_queue_after = zeros(mod1_prag_preverjanja,1);
-                    hitraSpremembaSmeri_queue_error = zeros(mod1_prag_preverjanja,1);
-                    hitraSpremembaSmeri_avg_before = 0;
-                    hitraSpremembaSmeri_avg_after = 0;
-                    hitraSpremembaSmeri_avg_error = 0;
-                    hitraSpremembaSmeri_var_before = 0;
-                    hitraSpremembaSmeri_var_after = 0;
-                    hitraSpremembaSmeri_var_error = 0;
-                end
-                %}
-                
-                %MODUL 2
-                %preverim ali je prišlo do napake pri ocenitvi, da ne gre za
-                %spremembo smeri
-                if(potencialnaNapakaPoZadetkuMeje_st > pragNapake)
-                    %napacno sem ocenil. Prišlo je do hitre spremembe smeri.
-                    %Novih vrednosti ne bom veè postavil na 0
-                    nova_vrednost = vhodni_podatek;
+                    %}
 
-                    %preverim ali popravek sploh obstaja
-                    if abs(potencialnaNapakaPoZadetkuMeje_cum_sum) > 0
-                        nova_vrednost = nova_vrednost + (potencialnaNapakaPoZadetkuMeje_cum_sum * faktorSkaliranjaPopravkaNapake);
-                        %ponastavitev sum-napaka (inicializacija za kasnejše
-                        %potencialne napake)
-                        potencialnaNapakaPoZadetkuMeje_cum_sum = 0;
-                    end
-                else
-                    %trenutno smo še mnenja, da je sprememba smeri le posledica
-                    %šuma in NE dejanske spremembe smeri gibanja naprave
-                    nova_vrednost = 0;
-                    potencialnaNapakaPoZadetkuMeje_cum_sum = potencialnaNapakaPoZadetkuMeje_cum_sum + vhodni_podatek; %pravilno da NI abs, saj tako upoštevam visoko varianco (ob prehodu èez 0). Abs pa uporabim pri preverjanju
-                end 
-            end            
+                    %MODUL 2
+                    %preverim ali je prišlo do napake pri ocenitvi, da ne gre za
+                    %spremembo smeri
+                    if(potencialnaNapakaPoZadetkuMeje_st > pragNapake)
+                        %napacno sem ocenil. Prišlo je do hitre spremembe smeri.
+                        %Novih vrednosti ne bom veè postavil na 0
+                        nova_vrednost = vhodni_podatek;
+
+                        %preverim ali popravek sploh obstaja
+                        if abs(potencialnaNapakaPoZadetkuMeje_cum_sum) > 0
+                            nova_vrednost = nova_vrednost + (potencialnaNapakaPoZadetkuMeje_cum_sum * faktorSkaliranjaPopravkaNapake);
+                            %ponastavitev sum-napaka (inicializacija za kasnejše
+                            %potencialne napake)
+                            potencialnaNapakaPoZadetkuMeje_cum_sum = 0;
+                        end
+                    else
+                        %trenutno smo še mnenja, da je sprememba smeri le posledica
+                        %šuma in NE dejanske spremembe smeri gibanja naprave
+                        nova_vrednost = 0;
+                        potencialnaNapakaPoZadetkuMeje_cum_sum = potencialnaNapakaPoZadetkuMeje_cum_sum + vhodni_podatek; %pravilno da NI abs, saj tako upoštevam visoko varianco (ob prehodu èez 0). Abs pa uporabim pri preverjanju
+                    end 
+                end
+            end
         end
     end
 end

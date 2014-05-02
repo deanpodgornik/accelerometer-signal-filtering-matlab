@@ -60,6 +60,9 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
             end
         else
             %ni potreben popravek konstantne hitrosti
+            
+            iteracija_gibanja = iteracija_gibanja + 1;
+            
             [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Popravek_hitrosti_aftereffect(pospesek, i, iteracija_gibanja, predznak, vhodni_podatek, data_raw(i), zadetekMejeSlike);
         end
     else
