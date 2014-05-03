@@ -71,7 +71,23 @@
 
 %data = csvread('../../data/acc15.csv')
 %data = csvread('../../data/acc16.csv')
-data = csvread('../../data/acc17.csv')
+%data = csvread('../../data/acc17.csv')
+
+%data = csvread('../../data/acc19.csv')
+data = csvread('../../data/acc21.csv')
+
+%napake
+%data = csvread('../../data/acc22.csv')
+
+%data = csvread('../../data/acc23.csv')
+%data = csvread('../../data/acc24.csv')
+%data = csvread('../../data/acc25.csv')
+%data = csvread('../../data/acc26.csv')
+
+%data = csvread('../../data/acc18.csv')
+%data = csvread('../../data/acc20.csv')
+%data = csvread('../../data/acc27.csv')
+%data = csvread('../../data/acc28.csv')
 
 clear pospesek_raw;
 clear pospesek;
@@ -86,6 +102,10 @@ iteracija_gibanja = 0;
 data = data(:,1); %X
 %data = data(:,2); %Y
 %data = data(:,3); %Z
+
+%doloèim koliko oddaljena je meja slike od izhodišèa
+mejeSistemaX = 0.10958966816079618;
+mejeSistemaY = 0.09015211004304888;
 
 %debugging
 %data = removerows(data,'ind',1500:3500);
@@ -127,9 +147,6 @@ freq = 1 / t; %50Hz
 
 gravity = 0;
 
-%doloèim koliko oddaljena je meja slike od izhodišèa
-mejeSistemaX = 0.10958966816079618;
-mejeSistemaY = 0.09015211004304888;
 %spremenljivka drži informacijo ali smo zadeli mejo slike ali ne
 zadetekMejeSlike = 0;
 
@@ -253,7 +270,7 @@ plot(x, hitrost_raw, 'color', 'red');
 plot(x, hitrost, 'color', 'blue');
 legend('hitrost NE-filtrirana','hitrost filtrirana');
 %ylim([-2 2])
-ylim([-0.5 0.5])
+ylim([-1.5 1.5])
 hold off;
 
 %pozicija

@@ -61,7 +61,7 @@
 
 %data = csvread('../../data/acc5.csv');
 %data = csvread('../../data/acc7.csv');
-%data = csvread('../../data/acc9.csv')
+%data = csvread('../../data/acc9.csv');
 %data = csvread('../../data/acc10.csv')
 %data = csvread('../../data/acc11.csv')
 
@@ -70,7 +70,19 @@
 %data = csvread('../../data/acc14.csv')
 
 %data = csvread('../../data/acc15.csv')
-data = csvread('../../data/acc16.csv')
+%data = csvread('../../data/acc16.csv')
+%data = csvread('../../data/acc17.csv')
+%data = csvread('../../data/acc18.csv')
+%data = csvread('../../data/acc19.csv')
+%data = csvread('../../data/acc20.csv')
+%data = csvread('../../data/acc21.csv')
+
+%napake
+%data = csvread('../../data/acc22.csv')
+
+%data = csvread('../../data/acc23.csv')
+%data = csvread('../../data/acc24.csv')
+data = csvread('../../data/acc25.csv')
 
 clear pospesek_raw;
 clear pospesek;
@@ -82,9 +94,13 @@ clear pozicija;
 iteracija_gibanja = 0;
 
 %upoštevam samo acceleracijo po x-osi
-data = data(:,1); %X
-%data = data(:,2); %Y
+%data = data(:,1); %X
+data = data(:,2); %Y
 %data = data(:,3); %Z
+
+%doloèim koliko oddaljena je meja slike od izhodišèa
+mejeSistemaY = 0.10958966816079618;
+mejeSistemaY = 0.09015211004304888;
 
 %debugging
 %data = removerows(data,'ind',1500:3500);
@@ -120,16 +136,12 @@ pozicija = zeros(length(filteredData),1); %po drugi integraciji pa dobim pozicij
 pozicija_raw = zeros(length(filteredData),1);
 
 %èasovni interval
-
 %t = 0.01; %fastest samsung
 t = 0.005; %fastest asus
 freq = 1 / t; %50Hz
 
 gravity = 0;
 
-%doloèim koliko oddaljena je meja slike od izhodišèa
-mejeSistemaX = 0.10958966816079618;
-mejeSistemaY = 0.09015211004304888;
 %spremenljivka drži informacijo ali smo zadeli mejo slike ali ne
 zadetekMejeSlike = 0;
 
@@ -153,7 +165,7 @@ for i=1:data_length
     
     %%{
     test = filteredData(i)
-    if(i>=725)
+    if(i>=220)
         i
     end
     %}
@@ -253,7 +265,7 @@ plot(x, hitrost_raw, 'color', 'red');
 plot(x, hitrost, 'color', 'blue');
 legend('hitrost NE-filtrirana','hitrost filtrirana');
 %ylim([-2 2])
-ylim([-0.5 0.5])
+ylim([-1.5 1.5])
 hold off;
 
 %pozicija

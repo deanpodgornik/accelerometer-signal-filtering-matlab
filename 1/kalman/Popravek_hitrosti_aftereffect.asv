@@ -26,7 +26,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
     prag_potencialnaNapakaPoZadetkuMeje_st = 80;
     potencialnaNapakaPoZadetkuMeje_var_n = 10;
     faktorSkaliranjaPopravkaNapake = 0.65;
-    prag_sumPoSpremembiSmeri = 0.3;
+    prag_sumPoSpremembiSmeri = 0.8;
     
     mod1_spodnji_prag = 0.03;
     mod1_zgornji_prag = 0.08;
@@ -70,8 +70,9 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
         %podatek vrenem nespremenjen
         nova_vrednost = vhodni_podatek;
     else
-        if(i>=262)
+        if(i>=1245)
             i 
+            i
         end
                 
         %Meritev ni veè prva zaznana smer gibanja.
@@ -83,7 +84,6 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
             
             %vsota, ki se beleži od spremembe smeri dalje
             sumPoSpremembiSmeri = sumPoSpremembiSmeri + abs(nova_vrednost);
-            sumPoSpremembiSmeri
         else
             %najprej preverim ali je sprememba smeri upravièena 
             %(vsota pred spremembo smeri mora biti dovolj velika, ker sicer gre za napako filtriranja nizkih frekvenc)
@@ -91,7 +91,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
             i
             sumPoSpremembiSmeri
             
-            if(sumPoSpremembiSmeri > 0 && sumPoSpremembiSmeri < prag_sumPoSpremembiSmeri)
+            if( 0 < sumPoSpremembiSmeri && sumPoSpremembiSmeri < prag_sumPoSpremembiSmeri )
                 %spremembo smeri obravnavam kot napako filtriranja nizkih
                 %frekvenc
                 sumPoSpremembiSmeri = 0;
@@ -136,9 +136,10 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                             end
                             potencialnaNapakaPoZadetkuMeje_var = potencialnaNapakaPoZadetkuMeje_var / (potencialnaNapakaPoZadetkuMeje_var_n);
                             potencialnaNapakaPoZadetkuMeje_var
+                            potencialnaNapakaPoZadetkuMeje_avg
                             i
 
-                            if(potencialnaNapakaPoZadetkuMeje_var < 0.00001)
+                            if(potencialnaNapakaPoZadetkuMeje_var < 0.00001 || abs(potencialnaNapakaPoZadetkuMeje_avg)<0.15)
                                 %gre le za veèjo napako po ustavljanju
 
                                 %doloèim nov popravek

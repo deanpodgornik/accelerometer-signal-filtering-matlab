@@ -70,8 +70,9 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
         %podatek vrenem nespremenjen
         nova_vrednost = vhodni_podatek;
     else
-        if(i>=262)
+        if(i>=1245)
             i 
+            i
         end
                 
         %Meritev ni veè prva zaznana smer gibanja.
@@ -135,9 +136,10 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                             end
                             potencialnaNapakaPoZadetkuMeje_var = potencialnaNapakaPoZadetkuMeje_var / (potencialnaNapakaPoZadetkuMeje_var_n);
                             potencialnaNapakaPoZadetkuMeje_var
+                            potencialnaNapakaPoZadetkuMeje_avg
                             i
 
-                            if(potencialnaNapakaPoZadetkuMeje_var < 0.00001)
+                            if(potencialnaNapakaPoZadetkuMeje_var < 0.00001 || abs(potencialnaNapakaPoZadetkuMeje_avg)<0.15)
                                 %gre le za veèjo napako po ustavljanju
 
                                 %doloèim nov popravek
@@ -173,14 +175,15 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                 else
                     %ni zaznanega trka ob mejo
 
+                    %sprememba smeri le posledica šuma in NE dejanske spremembe smeri gibanja naprave
+                    nova_vrednost = 0;
+                    
                     %MODUL 1
                     %Preverjanje hitre spremembe smeri
                     %najprej preverim ali smo v obratni hitrosti, kot je bila
                     %zaèetna smer, ter nato še èe smo znotraj pasa obravnave.
                     %OPOMBA: èe je prišlo do spremembe smeri moram preveriti na vhodnem podatku s popravkom (vhodni_podatek)
                     %%{
-                    i
-                    (predznak*vhodni_podatek_raw)<0
                     if((predznak*vhodni_podatek_raw)<0)
                         hitraSpremembaSmeri_st = hitraSpremembaSmeri_st + 1;
 
@@ -277,6 +280,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                                         %shranim meritve
                                         hitraSpremembaSmeri_queue_error(mod1_st) = vhodni_podatek_raw;
                                     else
+                                        %{
                                         mod1_st = mod1_st - 1;
 
                                         %izraèunam varianco
@@ -311,6 +315,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                                         hitraSpremembaSmeri_var_before = 0; 
                                         hitraSpremembaSmeri_var_after = 0; 
                                         hitraSpremembaSmeri_var_error = 0; 
+                                        %}
                                     end
                                 end
                             end
@@ -332,28 +337,6 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
                         hitraSpremembaSmeri_var_error = 0;
                     end
                     %}
-
-                    %MODUL 2
-                    %preverim ali je prišlo do napake pri ocenitvi, da ne gre za
-                    %spremembo smeri
-                    if(potencialnaNapakaPoZadetkuMeje_st > pragNapake)
-                        %napacno sem ocenil. Prišlo je do hitre spremembe smeri.
-                        %Novih vrednosti ne bom veè postavil na 0
-                        nova_vrednost = vhodni_podatek;
-
-                        %preverim ali popravek sploh obstaja
-                        if abs(potencialnaNapakaPoZadetkuMeje_cum_sum) > 0
-                            nova_vrednost = nova_vrednost + (potencialnaNapakaPoZadetkuMeje_cum_sum * faktorSkaliranjaPopravkaNapake);
-                            %ponastavitev sum-napaka (inicializacija za kasnejše
-                            %potencialne napake)
-                            potencialnaNapakaPoZadetkuMeje_cum_sum = 0;
-                        end
-                    else
-                        %trenutno smo še mnenja, da je sprememba smeri le posledica
-                        %šuma in NE dejanske spremembe smeri gibanja naprave
-                        nova_vrednost = 0;
-                        potencialnaNapakaPoZadetkuMeje_cum_sum = potencialnaNapakaPoZadetkuMeje_cum_sum + vhodni_podatek; %pravilno da NI abs, saj tako upoštevam visoko varianco (ob prehodu èez 0). Abs pa uporabim pri preverjanju
-                    end 
                 end
             end
         end
