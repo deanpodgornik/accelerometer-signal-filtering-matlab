@@ -61,20 +61,17 @@
 
 %data = csvread('../../data/acc5.csv');
 %data = csvread('../../data/acc7.csv');
-%data = csvread('../../data/acc9.csv');
 %data = csvread('../../data/acc10.csv')
-%data = csvread('../../data/acc11.csv')
 
 %data = csvread('../../data/acc12.csv')
 %data = csvread('../../data/acc13.csv')
 %data = csvread('../../data/acc14.csv')
 
-%data = csvread('../../data/acc15.csv')
-%data = csvread('../../data/acc16.csv')
+
 %data = csvread('../../data/acc17.csv')
 
 %data = csvread('../../data/acc19.csv')
-data = csvread('../../data/acc21.csv')
+%data = csvread('../../data/acc21.csv')
 
 %napake
 %data = csvread('../../data/acc22.csv')
@@ -88,6 +85,11 @@ data = csvread('../../data/acc21.csv')
 %data = csvread('../../data/acc20.csv')
 %data = csvread('../../data/acc27.csv')
 %data = csvread('../../data/acc28.csv')
+
+data = csvread('../../data/acc9.csv');
+%data = csvread('../../data/acc11.csv')
+%data = csvread('../../data/acc15.csv')
+%data = csvread('../../data/acc16.csv')
 
 clear pospesek_raw;
 clear pospesek;
