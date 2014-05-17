@@ -25,7 +25,7 @@
 %data = csvread('../../data/asus_hitro-1+1_2.csv');
 %data = csvread('../../data/lastTest.csv');
 %data = csvread('../../data/hitro_in_posasi.csv');
-%data = csvread('../../data/hitro_in_posasi_2.csv');
+data = csvread('../../data/hitro_in_posasi_2.csv');
 
 %data = csvread('../../data/asus_data.csv');
 
@@ -99,9 +99,9 @@
 %data = csvread('../../data/s4_napaka.csv')
 %data = csvread('../../data/s4_napaka_2.csv')
 
-%data = csvread('../../data/asus_z_1.csv')
-data = csvread('../../data/asus_z_2.csv')
-%data = csvread('../../data/asus_z_3.csv')
+%data = csvread('../../data/asus_z_1.csv') %Z
+%data = csvread('../../data/asus_z_2.csv') %Z
+data = csvread('../../data/asus_z_3.csv') %Z
 
 clear pospesek_raw;
 clear pospesek;
@@ -199,8 +199,8 @@ for i=1:data_length
         end
         
         %filtriranje nizkih frekvenc
-        if abs(hitrost_raw(i)+popravek_hitrosti_num) < prag_filtriranja_niz_frek
-            hitrost(i) = 0.0;
+        if abs(hitrost_raw(i)-popravek_hitrosti_num) < prag_filtriranja_niz_frek
+            hitrost(i) = popravek_hitrosti_num;
         else
             hitrost(i) = hitrost_raw(i);
         end
