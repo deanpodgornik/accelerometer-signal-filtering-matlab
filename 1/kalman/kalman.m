@@ -86,10 +86,22 @@
 %data = csvread('../../data/acc27.csv')
 %data = csvread('../../data/acc28.csv')
 
-data = csvread('../../data/acc9.csv');
+%data = csvread('../../data/acc9.csv');
 %data = csvread('../../data/acc11.csv')
 %data = csvread('../../data/acc15.csv')
 %data = csvread('../../data/acc16.csv')
+
+%data = csvread('../../data/s4_1.csv')
+%data = csvread('../../data/s4_2.csv')
+%data = csvread('../../data/s4_3.csv')
+%data = csvread('../../data/s4_4.csv')
+
+%data = csvread('../../data/s4_napaka.csv')
+%data = csvread('../../data/s4_napaka_2.csv')
+
+%data = csvread('../../data/asus_z_1.csv')
+data = csvread('../../data/asus_z_2.csv')
+%data = csvread('../../data/asus_z_3.csv')
 
 clear pospesek_raw;
 clear pospesek;
@@ -101,13 +113,13 @@ clear pozicija;
 iteracija_gibanja = 0;
 
 %upoštevam samo acceleracijo po x-osi
-data = data(:,1); %X
+%data = data(:,1); %X
 %data = data(:,2); %Y
-%data = data(:,3); %Z
+data = data(:,3); %Z
 
 %doloèim koliko oddaljena je meja slike od izhodišèa
-mejeSistemaX = 0.10958966816079618;
-mejeSistemaY = 0.09015211004304888;
+mejeSistemaX = 110.10958966816079618;
+mejeSistemaY = 110.09015211004304888;
 
 %debugging
 %data = removerows(data,'ind',1500:3500);
@@ -278,4 +290,4 @@ hold off;
 %pozicija
 subplot(3,1,3);
 plot(x, pozicija, 'color', 'blue');
-legend('pozicija');
+legend('pozicija (m)');
