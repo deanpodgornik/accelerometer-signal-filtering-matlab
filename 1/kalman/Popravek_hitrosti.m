@@ -2,7 +2,11 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
     persistent ponavljajoca_vrednost;
     persistent st_ponavljanja;
     persistent predznak;
+    persistent firstRun_os_z;
     global popravek_hitrosti_num;
+    global os_z;
+    persistent pragPonavljanja;
+    
     pragPonavljanja = 40;
     pragPonavljanja_priNicli = 25;
     
@@ -11,6 +15,8 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
         st_ponavljanja = 0;
         popravek_hitrosti_num = 0;
         predznak = 1;
+        
+        firstRun_os_z = 1;
         
         firstRun = 0;
     end
@@ -67,7 +73,6 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
         end
     else
         %vrednost se ne ponavlja (naprava je v gibanju)
-        i
         
         st_ponavljanja = 0;
         %nastavim novo vrednost, ki se mora ponavljati
@@ -75,6 +80,10 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
         
         iteracija_gibanja = iteracija_gibanja + 1;
         [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Popravek_hitrosti_aftereffect(pospesek, i, iteracija_gibanja, predznak, vhodni_podatek, data_raw(i), zadetekMejeSlike);
+    end
+    
+    if(os_z)
+        [ponavljajoca_vrednost, firstRun_os_z] = Popravek_hitrosti_os_z(firstRun_os_z, i, nova_vrednost, ponavljajoca_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike);
     end
 end
 

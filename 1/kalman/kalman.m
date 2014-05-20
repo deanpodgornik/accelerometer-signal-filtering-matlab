@@ -99,9 +99,9 @@ data = csvread('../../data/hitro_in_posasi_2.csv');
 %data = csvread('../../data/s4_napaka.csv')
 %data = csvread('../../data/s4_napaka_2.csv')
 
-%data = csvread('../../data/asus_z_1.csv') %Z
+data = csvread('../../data/asus_z_1.csv') %Z
 %data = csvread('../../data/asus_z_2.csv') %Z
-data = csvread('../../data/asus_z_3.csv') %Z
+%data = csvread('../../data/asus_z_3.csv') %Z
 
 clear pospesek_raw;
 clear pospesek;
@@ -116,6 +116,9 @@ iteracija_gibanja = 0;
 %data = data(:,1); %X
 %data = data(:,2); %Y
 data = data(:,3); %Z
+
+global os_z;
+os_z = true;
 
 %doloèim koliko oddaljena je meja slike od izhodišèa
 mejeSistemaX = 110.10958966816079618;
