@@ -83,7 +83,7 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
     end
     
     if(os_z)
-        [ponavljajoca_vrednost, firstRun_os_z] = Popravek_hitrosti_os_z(firstRun_os_z, i, nova_vrednost, ponavljajoca_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike);
+        [nova_vrednost, ponavljajoca_vrednost, firstRun_os_z] = Popravek_hitrosti_os_z(firstRun_os_z, i, nova_vrednost, ponavljajoca_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike);
     end
 end
 

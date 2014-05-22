@@ -99,9 +99,13 @@ data = csvread('../../data/hitro_in_posasi_2.csv');
 %data = csvread('../../data/s4_napaka.csv')
 %data = csvread('../../data/s4_napaka_2.csv')
 
-data = csvread('../../data/asus_z_1.csv') %Z
+%data = csvread('../../data/asus_z_1.csv') %Z
 %data = csvread('../../data/asus_z_2.csv') %Z
 %data = csvread('../../data/asus_z_3.csv') %Z
+%data = csvread('../../data/asus_z_4.csv') %Z
+%data = csvread('../../data/asus_z_5.csv') %Z
+%data = csvread('../../data/asus_z_6.csv') %Z
+data = csvread('../../data/asus_z_7.csv') %Z
 
 clear pospesek_raw;
 clear pospesek;
@@ -128,7 +132,11 @@ mejeSistemaY = 110.09015211004304888;
 %data = removerows(data,'ind',1500:3500);
 %data = removerows(data,'ind',1:800);
 
-prag_pospesek = 0.4;
+if(os_z)
+    prag_pospesek = 0.8;
+else
+    prag_pospesek = 0.4;
+end
 prag_hitrost = 0.03;
 
 fistRun_pospesek = 1;
@@ -262,8 +270,13 @@ for i=1:data_length
         zadetekMejeSlike = 1;
     end
     
-    %popravek pozicije na podlagi kalibracije
-    %pozicija(i) = pozicija(i) * 2.2;
+    %popravek pozicije na podlagi kalibracije (skaliranje)
+    if(os_z)
+        %brez skaliranja z-osi
+    else
+        %skaliranje x in y osi
+        pozicija(i) = pozicija(i) * 2.2;
+    end
 end
 
 %pospešek
