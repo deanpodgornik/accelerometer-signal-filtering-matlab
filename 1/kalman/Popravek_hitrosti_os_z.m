@@ -1,4 +1,4 @@
-function [hitrost, ponavljajoca_vrednost, firstRun_os_z] = Popravek_hitrosti_os_z( firstRun_os_z, i, hitrost, ponavljajoca_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike )
+function [hitrost, firstRun_os_z] = Popravek_hitrosti_os_z( firstRun_os_z, i, hitrost, iteracija_gibanja, predznak, zadetekMejeSlike )
     global popravek_hitrosti_num;
     
     persistent max;
@@ -21,14 +21,14 @@ function [hitrost, ponavljajoca_vrednost, firstRun_os_z] = Popravek_hitrosti_os_
         max = hitrost_raw;
     end
     
-    %skaliranje rezultat hitrosti z-osi
+    %skaliranje rezultata hitrosti z-osi
     if(hitrost>0)
-        hitrost = hitrost * 0.35;
+        hitrost = hitrost * 0.8;
     else
-        hitrost = hitrost * 1.1;
+        hitrost = hitrost * 1.5;
     end
     
-    if(i > 960)
+    if(i > 560)
         i
     end
     

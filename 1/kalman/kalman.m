@@ -25,7 +25,7 @@
 %data = csvread('../../data/asus_hitro-1+1_2.csv');
 %data = csvread('../../data/lastTest.csv');
 %data = csvread('../../data/hitro_in_posasi.csv');
-data = csvread('../../data/hitro_in_posasi_2.csv');
+%data = csvread('../../data/hitro_in_posasi_2.csv');
 
 %data = csvread('../../data/asus_data.csv');
 
@@ -105,7 +105,10 @@ data = csvread('../../data/hitro_in_posasi_2.csv');
 %data = csvread('../../data/asus_z_4.csv') %Z
 %data = csvread('../../data/asus_z_5.csv') %Z
 %data = csvread('../../data/asus_z_6.csv') %Z
-data = csvread('../../data/asus_z_7.csv') %Z
+%data = csvread('../../data/asus_z_7.csv') %Z
+%data = csvread('../../data/asus_z_8.csv') %Z
+%data = csvread('../../data/asus_z_9.csv') %Z
+data = csvread('../../data/asus_z_10.csv') %Z
 
 clear pospesek_raw;
 clear pospesek;
@@ -227,9 +230,7 @@ for i=1:data_length
 
     %integracija - pozicija
     if(i-1>0)
-        %faktor_pozicije = 2.2;
-        faktor_pozicije = 2.2;
-        pozicija_raw(i) = pozicija_raw(i-1) + Integration_step(hitrost,i,freq,'trapez') * faktor_pozicije;
+        pozicija_raw(i) = pozicija_raw(i-1) + Integration_step(hitrost,i,freq,'trapez');
         
         %filtriranje
         %pozicija(i) = Filtering(pozicija_raw, i);
