@@ -138,6 +138,8 @@ mejeSistemaY = 110.09015211004304888;
 %data = removerows(data,'ind',1500:3500);
 %data = removerows(data,'ind',1:800);
 
+razlika
+
 if(os_z)
     prag_pospesek = 0.8;
 else
