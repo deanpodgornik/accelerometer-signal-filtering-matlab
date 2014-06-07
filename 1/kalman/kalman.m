@@ -138,12 +138,23 @@ mejeSistemaY = 110.09015211004304888;
 %data = removerows(data,'ind',1500:3500);
 %data = removerows(data,'ind',1:800);
 
+%potrebno za znizati povpreèje pospeška z osi
+razlika_od_povprecja = 0;
+
 if(os_z)
     prag_pospesek = 0.8;
+    
+    %povpreèje, ki se bo odštelo od vsake vrednosti
+    razlika_od_povprecja = 0.1835;
 else
     prag_pospesek = 0.4;
 end
 prag_hitrost = 0.03;
+
+%popravek podatkov pospeška (odštevanje povpreène vrednosti)
+for i=1:data_length
+    data(i) = data(i) - razlika_od_povprecja;
+end
 
 fistRun_pospesek = 1;
 firstRun_filtriranjePospeska = 1;
@@ -186,7 +197,7 @@ for i=1:data_length
     
     %filtering linear acceleration
     if(i-1>0)
-        filteredData(i) = Filtering(source, i, 'kalman', {varianca_a, 'pospesek'});      
+        filteredData(i) = Filtering(source, i, 'kalman', {varianca_a, 'pospesek', os_z});      
     else
         filteredData(i) = 0;
     end

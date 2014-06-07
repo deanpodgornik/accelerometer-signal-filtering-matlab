@@ -12,7 +12,7 @@ function output_data = Filtering( input_data, i, filter_type, parameters )
             
             varianca = cell2mat(parameters(1));
             namen = parameters{2};
-            os_z = cell2mat(parameters(3));
+            os_z = cell2mat(parameters(1));
             
             if strcmp(namen,'pospesek')==1 && isempty(firstRun_a)
                 firstRun_a = 0;

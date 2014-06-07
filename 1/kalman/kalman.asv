@@ -138,10 +138,14 @@ mejeSistemaY = 110.09015211004304888;
 %data = removerows(data,'ind',1500:3500);
 %data = removerows(data,'ind',1:800);
 
-razlika
+%potrebno za znizati povpreèje pospeška z osi
+razlika_od_povprecja = 0;
 
 if(os_z)
     prag_pospesek = 0.8;
+    
+    %povpreèje, ki se bo nato odštelo od vsake vrednosti
+    razlika_od_povprecja = 0.1835;
 else
     prag_pospesek = 0.4;
 end
