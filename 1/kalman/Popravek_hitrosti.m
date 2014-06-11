@@ -7,7 +7,7 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
     global os_z;
     persistent pragPonavljanja;
     
-    pragPonavljanja = 40;
+    pragPonavljanja = 100;
     pragPonavljanja_priNicli = 25;
     
     if firstRun == 1
@@ -20,6 +20,7 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
         
         firstRun = 0;
     end
+    
     %vrednost na zaèetku postavim tako, da upoštevam predhodne popravke (zaradi napaène konstantne vrednosti)
     %(ob prvi iteraciji je popravek_hitrosti_num 0, torej niè ne vpliva na zaèetku)
     vhodni_podatek = data(i) + ((-1) * popravek_hitrosti_num);

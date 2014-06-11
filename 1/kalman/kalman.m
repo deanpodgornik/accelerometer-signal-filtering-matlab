@@ -111,7 +111,9 @@
 %data = csvread('../../data/asus_z_10.csv') %Z
 %data = csvread('../../data/asus_z_11.csv') %Z
 %data = csvread('../../data/asus_z_12.csv') %Z
-data = csvread('../../data/asus_z_13.csv') %Z
+%data = csvread('../../data/asus_z_13.csv') %Z
+data = csvread('../../data/asus_z_14.csv') %Z
+
 
 clear pospesek_raw;
 clear pospesek;
@@ -151,7 +153,10 @@ else
 end
 prag_hitrost = 0.03;
 
+source = data;
+
 %popravek podatkov pospeška (odštevanje povpreène vrednosti)
+data_length = length(source);
 for i=1:data_length
     data(i) = data(i) - razlika_od_povprecja;
 end
@@ -160,12 +165,10 @@ fistRun_pospesek = 1;
 firstRun_filtriranjePospeska = 1;
 fistRun_hitrost = 1;
 
-source = data;
 raw_acceleration = data;
 %varianca_a = var(source);
 varianca_a = 1.7346;
 varianca_h = var(source);
-data_length = length(source);
 
 prag_filtriranja_niz_frek = 0.04;
 
