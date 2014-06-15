@@ -112,7 +112,8 @@
 %data = csvread('../../data/asus_z_11.csv') %Z
 %data = csvread('../../data/asus_z_12.csv') %Z
 %data = csvread('../../data/asus_z_13.csv') %Z
-data = csvread('../../data/asus_z_14.csv') %Z
+%data = csvread('../../data/asus_z_14.csv') %Z
+data = csvread('../../data/asus_z_15.csv') %Z
 
 
 clear pospesek_raw;
@@ -144,7 +145,7 @@ mejeSistemaY = 110.09015211004304888;
 razlika_od_povprecja = 0;
 
 if(os_z)
-    prag_pospesek = 0.8;
+    prag_pospesek = 1.0;
     
     %povpreèje, ki se bo odštelo od vsake vrednosti
     razlika_od_povprecja = 0.1835;

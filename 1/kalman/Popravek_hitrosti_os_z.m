@@ -9,7 +9,6 @@ function [hitrost, firstRun_os_z] = Popravek_hitrosti_os_z( firstRun_os_z, i, hi
         firstRun_os_z = 0;
     end
     
-    
     hitrost_raw = hitrost + popravek_hitrosti_num;
     
     if(firstRun_os_z == 1 || iteracija_gibanja == 1 || zadetekMejeSlike == 1)

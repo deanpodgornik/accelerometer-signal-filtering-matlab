@@ -4,10 +4,17 @@ function [nova_vrednost firstRun] = Popravek_pospeska( data, i, prag_pospesek, f
     persistent stPonovitev;
     persistent stIteracijNeupostevanja;
     persistent neupostevanjePredznakaPorabljeno;
-    pragPonavljanja = 20;
-    %iniStIteracijNeupostevanja = 150;
-    iniStIteracijNeupostevanja = 200;
+    
+    global os_z;
+    
     pragPrevirjanjaSpremembeSmeri = 20;
+    pragPonavljanja = 20;
+    
+    if(os_z)    
+        iniStIteracijNeupostevanja = 100;
+    else
+        iniStIteracijNeupostevanja = 200;
+    end
     
     %{
     if i>666

@@ -7,7 +7,8 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
     global os_z;
     persistent pragPonavljanja;
     
-    pragPonavljanja = 100;
+    pragPonavljanja = 20;
+    
     pragPonavljanja_priNicli = 25;
     
     if firstRun == 1
