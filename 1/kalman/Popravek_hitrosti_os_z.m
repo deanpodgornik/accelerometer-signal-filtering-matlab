@@ -16,8 +16,8 @@ function [hitrost, firstRun_os_z] = Popravek_hitrosti_os_z( firstRun_os_z, i, hi
     
     %skaliranje rezultata hitrosti z-osi
     if(hitrost>0)
-        hitrost = hitrost * 0.8;
+        hitrost = hitrost * 1;
     else
-        hitrost = hitrost * 1.5;
+        hitrost = hitrost * 1;
     end
 end

@@ -162,36 +162,6 @@ for i=1:data_length
     data(i) = data(i) - razlika_od_povprecja;
 end
 
-%odpravljanje napake zaèetne nestabilnosti (Samsung S4)
-st_ponavljajoce_vrednosti = 0;
-pragPonavljanja = 400; %2s
-ponavljajoca_vrednost = source(i);
-zacetnaNestabilnostSt = 0;
-prag_pospeseka_nestabilnosti = 0.1;
-for i=2:data_length
-    %opravim filtriranje nizkih frekvenc
-    vhodni_podatek = source(i);
-    if abs(vhodni_podatek) < prag_pospeseka_nestabilnosti
-        vhodni_podatek = 0;
-    end    
-    
-    if (abs(vhodni_podatek - ponavljajoca_vrednost) < 0.0005)
-        st_ponavljajoce_vrednosti = st_ponavljajoce_vrednosti + 1;
-    else
-        ponavljajoca_vrednost = vhodni_podatek;
-        st_ponavljajoce_vrednosti = 0;
-    end
-    
-    if(st_ponavljajoce_vrednosti>pragPonavljanja)
-        zacetnaNestabilnostSt = i;
-        break;
-    end
-end
-zacetnaNestabilnostRezultat = zacetnaNestabilnostSt - pragPonavljanja
-%data = data(zacetnaNestabilnostRezultat:end);
-%source = data;
-data_length = length(source);
-
 fistRun_pospesek = 1;
 firstRun_filtriranjePospeska = 1;
 fistRun_hitrost = 1;
@@ -225,6 +195,12 @@ gravity = 0;
 
 %spremenljivka drži informacijo ali smo zadeli mejo slike ali ne
 zadetekMejeSlike = 0;
+
+%odpravljanje napake zaèetne nestabilnosti (Samsung S4)
+
+for i=1:data_length
+    
+end
 
 %iterator (real-time simulator)
 for i=1:data_length
