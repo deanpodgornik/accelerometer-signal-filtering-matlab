@@ -334,25 +334,20 @@ x = 1:data_length;
 %pobrišem grafe
 clf
 
-subplot(3,1,1);
-plot(x, source, 'color', 'red');
-hold on;
-plot(x, filteredData, 'color', 'blue');
-legend('originalni podatki pospeška','filtrirani podatki pospeška');
-hold off;
+hitrost = hitrost(100:500)
+hitrost_raw = hitrost_raw(100:500)
+delta_t = 1 / 200;
+data_length = length(hitrost);
+x = delta_t:delta_t:(data_length*delta_t);
 
-%hitrost
-subplot(3,1,2);
 %plot(x, hitrost_raw, 'color', 'red');
 hold on;
 plot(x, hitrost_raw, 'color', 'red');
 plot(x, hitrost, 'color', 'blue');
 legend('hitrost NE-filtrirana','hitrost filtrirana');
-%ylim([-2 2])
-ylim([-1.5 1.5])
+xlim([0 2])
+ylim([-0.3 0.3])
+legend('Originalen signal hitrosti','Filtriran signal hitrosti');
+xlabel('Èas (s)');
+ylabel('Hitrost (m/s)');
 hold off;
-
-%pozicija
-subplot(3,1,3);
-plot(x, pozicija, 'color', 'blue');
-legend('pozicija (m)');

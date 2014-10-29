@@ -1,119 +1,6 @@
 %preberem csv datoteko
-%data = csvread('../../data/samsung_50_povratna_v2.csv');
-%data = csvread('../../data/samsung_50_2_enosmerna.csv');
-%data = csvread('../../data/samsung_50_dve_smeri.csv');
-%data = csvread('../../data/samsung_50_v_roki.csv');
-%data = csvread('../../data/asus_50_povratna.csv');
-%data = csvread('../../data/samsung_-1+0.5+0.5.csv');
-%data = csvread('../../data/samsung_-0.5-0.5+0.5+0.5.csv');
-%data = csvread('../../data/samsung_h_-1+0.5+0.5.csv');
-%data = csvread('../../data/samsung_raw_acceleration.csv');
-%data = csvread('../../data/asus_-1+1.csv');
-%data = csvread('../../data/asus_roka-1+1.csv');
-    %data = csvread('../../data/asus_pravokotnika+diagonala_and_back.csv');
-    %data = csvread('../../data/asus_factory.csv');
-%data = csvread('../../data/asus_triangle_-1+05+05.csv');
-%data = csvread('../../data/zacetek_vertikala.csv');
 
-%data = csvread('../../data/asus-1+05+05.csv');
-    %data = csvread('../../data/asus_pol_test.csv');
-%data = csvread('../../data/asus_L_test.csv'); %-1+05+u05+05-u05
-%data = csvread('../../data/asus_dvojnitrikotnik05.csv');
-%data = csvread('../../data/asus_factory_2.csv');
-%data = csvread('../../data/asus_+1-1+1-1.csv');
-%data = csvread('../../data/asus_hitro_levo_desno.csv');
-%data = csvread('../../data/asus_hitro-1+1_2.csv');
-%data = csvread('../../data/lastTest.csv');
-%data = csvread('../../data/hitro_in_posasi.csv');
-%data = csvread('../../data/hitro_in_posasi_2.csv');
-
-%data = csvread('../../data/asus_data.csv');
-
-%kratki premiki
-%data = csvread('../../data/kratka_razdalja_3x.csv');
-%data = csvread('../../data/-20+20-20+20-20+10+10.csv');
-%data = csvread('../../data/d20+g20+l20.csv');
-%data = csvread('../../data/-10+20.csv');
-%data = csvread('../../data/gyro1.csv');
-%data = csvread('../../data/gyro2.csv');
-%data = csvread('../../data/gyro3.csv');
-
-%data = csvread('../../data/gyro4.csv');
-%data = csvread('../../data/gyro5.csv');
-%data = csvread('../../data/gyro6.csv');
-
-%data = csvread('../../data/gyro10.csv'); %Y
-%data = csvread('../../data/gyro12.csv'); %Y
-%data = csvread('../../data/gyro13.csv'); %Y
-%data = csvread('../../data/gyro15.csv') %Z
-%data = csvread('../../data/gyro16.csv') %Z
-%data = csvread('../../data/acc1.csv'); %Y
-
-%data = csvread('../../data/gyro9.csv');
-%data = csvread('../../data/gyro11.csv');
-
-%data = csvread('../../data/acc2.csv');
-%data = csvread('../../data/acc3.csv');
-%data = csvread('../../data/acc4.csv');
-data = csvread('../../data/acc6.csv');
-
-%data = csvread('../../data/acc8.csv');
-
-%data = csvread('../../data/acc5.csv');
-%data = csvread('../../data/acc7.csv');
-%data = csvread('../../data/acc10.csv')
-
-%data = csvread('../../data/acc12.csv')
-%data = csvread('../../data/acc13.csv')
-%data = csvread('../../data/acc14.csv')
-
-
-%data = csvread('../../data/acc17.csv')
-
-%data = csvread('../../data/acc19.csv')
-%data = csvread('../../data/acc21.csv')
-
-%napake
-%data = csvread('../../data/acc22.csv')
-
-%data = csvread('../../data/acc23.csv')
-%data = csvread('../../data/acc24.csv')
-%data = csvread('../../data/acc25.csv')
-%data = csvread('../../data/acc26.csv')
-
-%data = csvread('../../data/acc18.csv')
-%data = csvread('../../data/acc20.csv')
-%data = csvread('../../data/acc27.csv')
-%data = csvread('../../data/acc28.csv')
-
-%data = csvread('../../data/acc9.csv');
-%data = csvread('../../data/acc11.csv')
-%data = csvread('../../data/acc15.csv')
-%data = csvread('../../data/acc16.csv')
-
-%data = csvread('../../data/s4_1.csv')
-%data = csvread('../../data/s4_2.csv')
-%data = csvread('../../data/s4_3.csv')
-%data = csvread('../../data/s4_4.csv')
-
-%data = csvread('../../data/s4_napaka.csv')
-%data = csvread('../../data/s4_napaka_2.csv')
-
-%data = csvread('../../data/asus_z_1.csv') %Z
-%data = csvread('../../data/asus_z_2.csv') %Z
-%data = csvread('../../data/asus_z_3.csv') %Z
-%data = csvread('../../data/asus_z_4.csv') %Z
-%data = csvread('../../data/asus_z_5.csv') %Z
-%data = csvread('../../data/asus_z_6.csv') %Z
-%data = csvread('../../data/asus_z_7.csv') %Z
-%data = csvread('../../data/asus_z_8.csv') %Z
-%data = csvread('../../data/asus_z_9.csv') %Z
-%data = csvread('../../data/asus_z_10.csv') %Z
-%data = csvread('../../data/asus_z_11.csv') %Z
-%data = csvread('../../data/asus_z_12.csv') %Z
-%data = csvread('../../data/asus_z_13.csv') %Z
-%data = csvread('../../data/asus_z_14.csv') %Z
-%data = csvread('../../data/asus_z_15.csv') %Z
+data = csvread('../../data/demo_n7_2.csv') 
 
 
 clear pospesek_raw;
@@ -129,6 +16,8 @@ iteracija_gibanja = 0;
 data = data(:,1); %X
 %data = data(:,2); %Y
 %data = data(:,3); %Z
+
+data = data(250:1800);
 
 global os_z;
 os_z = false;
@@ -334,25 +223,46 @@ x = 1:data_length;
 %pobrišem grafe
 clf
 
-subplot(3,1,1);
+%popravek osi x
+delta_t = 1 / 200;
+data_length = length(hitrost);
+x = delta_t:delta_t:(data_length*delta_t);
+
+%%{
 plot(x, source, 'color', 'red');
 hold on;
 plot(x, filteredData, 'color', 'blue');
-legend('originalni podatki pospeška','filtrirani podatki pospeška');
+legend('Originalen signal pospeška','Filtriran signal pospeška');
+xlabel('Èas (s)');
+ylabel('Pospešek (m/s^2)');
+xlim([0 7])
+ylim([-4 4])
 hold off;
+%}
+
 
 %hitrost
-subplot(3,1,2);
+%{
 %plot(x, hitrost_raw, 'color', 'red');
 hold on;
 plot(x, hitrost_raw, 'color', 'red');
 plot(x, hitrost, 'color', 'blue');
-legend('hitrost NE-filtrirana','hitrost filtrirana');
-%ylim([-2 2])
-ylim([-1.5 1.5])
+legend('Originalen signal hitrosti','Filtriran signal hitrosti');
+xlabel('Èas (s)');
+ylabel('Hitrost (m/s)');
+xlim([0 7])
+ylim([-0.5 0.7])
 hold off;
+%}
 
 %pozicija
-subplot(3,1,3);
+%{
+hold on;
 plot(x, pozicija, 'color', 'blue');
-legend('pozicija (m)');
+legend('Signal pozicije');
+xlabel('Èas (s)');
+ylabel('Pozicija (m)');
+xlim([0 7])
+ylim([-0.3 0.3])
+hold off;
+%}

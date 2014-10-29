@@ -55,7 +55,7 @@
 %data = csvread('../../data/acc2.csv');
 %data = csvread('../../data/acc3.csv');
 %data = csvread('../../data/acc4.csv');
-data = csvread('../../data/acc6.csv');
+%data = csvread('../../data/acc6.csv');
 
 %data = csvread('../../data/acc8.csv');
 
@@ -87,7 +87,7 @@ data = csvread('../../data/acc6.csv');
 %data = csvread('../../data/acc28.csv')
 
 %data = csvread('../../data/acc9.csv');
-%data = csvread('../../data/acc11.csv')
+data = csvread('../../data/acc11.csv')
 %data = csvread('../../data/acc15.csv')
 %data = csvread('../../data/acc16.csv')
 
@@ -129,6 +129,8 @@ iteracija_gibanja = 0;
 data = data(:,1); %X
 %data = data(:,2); %Y
 %data = data(:,3); %Z
+
+data = data(200:1700);
 
 global os_z;
 os_z = false;

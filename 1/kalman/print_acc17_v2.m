@@ -55,7 +55,7 @@
 %data = csvread('../../data/acc2.csv');
 %data = csvread('../../data/acc3.csv');
 %data = csvread('../../data/acc4.csv');
-data = csvread('../../data/acc6.csv');
+%data = csvread('../../data/acc6.csv');
 
 %data = csvread('../../data/acc8.csv');
 
@@ -68,7 +68,7 @@ data = csvread('../../data/acc6.csv');
 %data = csvread('../../data/acc14.csv')
 
 
-%data = csvread('../../data/acc17.csv')
+data = csvread('../../data/acc17.csv')
 
 %data = csvread('../../data/acc19.csv')
 %data = csvread('../../data/acc21.csv')
@@ -334,25 +334,22 @@ x = 1:data_length;
 %pobrišem grafe
 clf
 
-subplot(3,1,1);
-plot(x, source, 'color', 'red');
-hold on;
-plot(x, filteredData, 'color', 'blue');
-legend('originalni podatki pospeška','filtrirani podatki pospeška');
-hold off;
+hitrost = hitrost(180:500)
+hitrost_raw = hitrost_raw(180:500)
+delta_t = 1 / 200;
+data_length = length(hitrost);
+x = delta_t:delta_t:(data_length*delta_t);
 
-%hitrost
-subplot(3,1,2);
+hitrost(90:155) = 0;
+
 %plot(x, hitrost_raw, 'color', 'red');
 hold on;
 plot(x, hitrost_raw, 'color', 'red');
 plot(x, hitrost, 'color', 'blue');
 legend('hitrost NE-filtrirana','hitrost filtrirana');
-%ylim([-2 2])
-ylim([-1.5 1.5])
+xlim([0 1.5])
+ylim([-0.5 1])
+legend('Originalen signal hitrosti','Filtriran signal hitrosti');
+xlabel('Èas (s)');
+ylabel('Hitrost (m/s)');
 hold off;
-
-%pozicija
-subplot(3,1,3);
-plot(x, pozicija, 'color', 'blue');
-legend('pozicija (m)');
