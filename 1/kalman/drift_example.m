@@ -33,22 +33,22 @@ for i=1:length(data)
     end
 end
 
-%{
+%%{
 plot(x, data, 'color', 'blue');
 hold on;
 legend('Signal pospeška (m/s^2)');
 xlabel('Èas (s)');
 ylabel('Pospešek (m/s^2)');
-axis([0 14 -0.1 0.10]);
-hold off;
+%axis([0 14 -0.1 0.10]);
+%hold off;
 %}
 
 %%{
-plot(x, pozicija, 'color', 'blue');
+plot(x, pozicija, 'color', 'red');
 hold on;
-legend('Signal premika (m)');
+legend('Signal pospeška (m/s^2)','Signal premika (m)');
 xlabel('Èas (s)');
-ylabel('Premik (m)');
-axis([0 14 -0.6 0.05]);
+ylabel('Premik (m)                       Pospešek (m/s^2)');
+axis([0 14 -0.6 0.2]);
 hold off;
 %}
