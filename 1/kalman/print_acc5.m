@@ -61,16 +61,17 @@ figure(2);
 plot(x, hitrost_raw, 'color', 'red');
 hold on;
 plot(x, hitrost, 'color', 'blue');
-legend('originalen signal hitrosti','filtriran signal hitrosti');
+legend('Signal hitrosti pridobljen iz nefiltriranega signala pospeška','Signal hitrosti pridobljen iz filtriranega signala pospeška');
 xlabel('Èas (s)');
 ylabel('Hitrost (m/s)');
+ylim([-0.25 0.32])
 hold off;
 
 figure(3);
 plot(x, pozicija_raw, 'color', 'red');
 hold on;
 plot(x, pozicija, 'color', 'blue');
-legend('originalen signal pozicije','filtriran signal pozicije');
+legend('Signal pozicije pridobljen iz nefiltriranega signala pospeška','Signal pozicije pridobljen iz filtriranega signala pospeška');
 xlabel('Èas (s)');
 ylabel('Pozicija (m/s)');
 hold off;
