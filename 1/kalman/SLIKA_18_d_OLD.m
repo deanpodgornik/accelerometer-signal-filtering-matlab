@@ -120,7 +120,7 @@ for i=1:data_length
     
     %filtering linear acceleration
     if(i-1>0)
-        filteredData(i) = Filtering(source, i, 'kalman', {varianca_a, 'pospesek', os_z});      
+        filteredData(i) = Filtering_dem(source, i, 'kalman', {varianca_a, 'pospesek', os_z});      
     else
         filteredData(i) = 0;
     end
@@ -242,8 +242,9 @@ hold off;
 
 
 %hitrost
-%{
+%%{
 %plot(x, hitrost_raw, 'color', 'red');
+figure(2);
 hold on;
 plot(x, hitrost_raw, 'color', 'red');
 plot(x, hitrost, 'color', 'blue');
@@ -256,7 +257,8 @@ hold off;
 %}
 
 %pozicija
-%{
+%%{
+figure(3);
 hold on;
 plot(x, pozicija, 'color', 'blue');
 legend('Signal pozicije');

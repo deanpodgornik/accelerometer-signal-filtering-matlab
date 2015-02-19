@@ -32,7 +32,15 @@ mejeSistemaY = 110.09015211004304888;
 %potrebno za znizati povpreèje pospeška z osi
 razlika_od_povprecja = 0;
 
-prag_pospesek = 0.4;
+if(os_z)
+    prag_pospesek = 1.0;
+    
+    %povpreèje, ki se bo odštelo od vsake vrednosti
+    razlika_od_povprecja = 0.1835;
+else
+    prag_pospesek = 0.4;
+end
+prag_hitrost = 0.03;
 
 source = data;
 
@@ -107,49 +115,154 @@ gravity = 0;
 zadetekMejeSlike = 0;
 
 %iterator (real-time simulator)
-
-for i=1:length(data)
+for i=1:data_length
     
     %filtering linear acceleration
     if(i-1>0)
-        filteredData(i) = Filtering(source, i, 'kalman', {varianca_a, 'pospesek', os_z});      
+        filteredData(i) = Filtering_dem(source, i, 'kalman', {varianca_a, 'pospesek', os_z});      
     else
         filteredData(i) = 0;
     end
     
+    %{
+    test = filteredData(i)
+    test
+    %}
+    
     %popravek filtriranja
     [filteredData(i) firstRun_filtriranjePospeska] = Popravek_pospeska(filteredData, i, prag_pospesek, firstRun_filtriranjePospeska );
+    
+    %%{
+    test = filteredData(i)
+    if(i>=220)
+        i
+    end
+    %}
     
     %integracija - hitrost
     if(i-1>0)
         hitrost_raw(i) = hitrost_raw(i-1) + Integration_step(filteredData,i,freq,'trapez');
         
+        i
+        if(i>400)
+            i
+        end
+        
+        %filtriranje nizkih frekvenc
+        if abs(hitrost_raw(i)-popravek_hitrosti_num) < prag_filtriranja_niz_frek
+            hitrost(i) = popravek_hitrosti_num;
+        else
+            hitrost(i) = hitrost_raw(i);
+        end
+        
+        %hitrost(i) = Filtering(hitrost_raw, i, 'kalman', {varianca_h, 'hitrost'});  
     else
         hitrost_raw(i) = 0;
         hitrost(i) = 0;
     end
+    %popravek filtriranja hitrosti
+    [nova_hitrost fistRun_hitrost iteracija_gibanja zadetekMejeSlike] =  Popravek_hitrosti(filteredData, hitrost, hitrost_raw, i, fistRun_hitrost, iteracija_gibanja, zadetekMejeSlike);
+    hitrost(i) = nova_hitrost;
+
+    %integracija - pozicija
+    if(i-1>0)
+        pozicija_raw(i) = pozicija_raw(i-1) + Integration_step(hitrost,i,freq,'trapez');
+        
+        %filtriranje
+        %pozicija(i) = Filtering(pozicija_raw, i);
+        pozicija(i) = pozicija_raw(i);       
+        
+    else
+        pozicija_raw(i) = 0;
+        pozicija(i) = 0;
+    end
+    
+    posTmp = pozicija(i)
+    if(i>=400)
+        posTmp
+    end
+    
+    %preverjanje trka ob mejo slike
+    sprVrednostGledeMej = 0;
+    pozicija(i)
+    if pozicija(i) < -mejeSistemaX
+        sprVrednostGledeMej = -mejeSistemaX;
+    end
+    if pozicija(i) > mejeSistemaX
+        sprVrednostGledeMej = mejeSistemaX;
+    end
+    %preverim ce je prislo do sprememb mej
+    if sprVrednostGledeMej ~= 0
+        %omejimo pozicijo
+        pozicija(i) = sprVrednostGledeMej;
+            pozicija_raw(i) = sprVrednostGledeMej;
+        %hitrost tudi postavimo na 0, saj se je zadeva ustavila
+        hitrost(i) = 0;
+            %hitrost_raw(i) = 0;
+        %doloèim da je nov zaèetek gibanja, s èimer se tudi omogoèi
+        %instantno spremembo smeri
+        iteracija_gibanja = 0;
+        
+        %shranim informacijo da je prišlo do zadetka v mojo slike
+        zadetekMejeSlike = 1;
+    end
+    
+    %popravek pozicije na podlagi kalibracije (skaliranje)
+    if(os_z)
+        %brez skaliranja z-osi
+    else
+        %skaliranje x in y osi
+        pozicija(i) = pozicija(i) * 2.2;
+    end
 end
 
 %pospešek
+x = 1:data_length;
+
+%pobrišem grafe
+clf
+
+%popravek osi x
 delta_t = 1 / 200;
-data_length = length(data);
-x = delta_t:delta_t:((data_length*delta_t));
+data_length = length(hitrost);
+x = delta_t:delta_t:(data_length*delta_t);
 
 %%{
-plot(x, filteredData, 'color', 'blue');
+plot(x, source, 'color', 'red');
 hold on;
+plot(x, filteredData, 'color', 'blue');
+legend('Originalen signal pospeška','Filtriran signal pospeška');
 xlabel('Èas (s)');
-%axis([0 14 -0.1 0.10]);
-%hold off;
+ylabel('Pospešek (m/s^2)');
+xlim([0 8])
+ylim([-4 4])
+hold off;
 %}
 
+%hitrost
 %%{
-plot(x, hitrost_raw, 'color', 'red');
+figure(2);
+%plot(x, hitrost_raw, 'color', 'red');
 hold on;
-legend('Signal pospeška (m/s^2)','Signal hitrosti (m/s)');
+plot(x, hitrost_raw, 'color', 'red');
+plot(x, hitrost, 'color', 'blue');
+legend('Originalen signal hitrosti','Filtriran signal hitrosti');
 xlabel('Èas (s)');
-ylabel('Hitrost (m/s)       |       Pospešek (m/s^2)');
-%axis([0 14 -0.6 0.2]);
-xlim([0,8]);
+ylabel('Hitrost (m/s)');
+xlim([0 8])
+ylim([-0.5 0.7])
+hold off;
+%}
+
+%pozicija
+%%{
+figure(3);
+hold on;
+plot(x, pozicija, 'color', 'blue');
+legend('Signal pozicije');
+xlabel('Èas (s)');
+ylabel('Pozicija (m)');
+xlim([0 8])
+ylim([-0.3 0.3])
 hold off;
 %}
