@@ -25,6 +25,7 @@ function output_data = Filtering_dem( input_data, i, filter_type, parameters )
                 if(os_z)
                     Q_a = 0.008;
                 else
+                    %popravek
                     Q_a = 0.005;
                 end
                 
