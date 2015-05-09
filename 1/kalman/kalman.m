@@ -57,6 +57,9 @@
 %data = csvread('../../data/acc4.csv');
 data = csvread('../../data/acc6.csv');
 
+data = csvread('../../data/s5_mini_1.csv');
+data = csvread('../../data/s5_mini_2.csv');
+
 %data = csvread('../../data/acc8.csv');
 
 %data = csvread('../../data/acc5.csv');
@@ -169,7 +172,7 @@ ponavljajoca_vrednost = source(i);
 zacetnaNestabilnostSt = 0;
 prag_pospeseka_nestabilnosti = 0.1;
 for i=2:data_length
-    %opravim filtriranje nizkih frekvenc
+    %opravim filtriranje nizkih vrednosti
     vhodni_podatek = source(i);
     if abs(vhodni_podatek) < prag_pospeseka_nestabilnosti
         vhodni_podatek = 0;
@@ -211,10 +214,19 @@ clear Filtering;
 clear Filter_SimpleKalman;
 
 %inicializacija dvojne integracije (zaèetni pogoji: hitrost = 0 in pozicija = 0)
+drift = zeros(1,length(source),1);
 hitrost = zeros(1,length(filteredData),1); %po prvi itegraciji dobim hitrost
 hitrost_raw = zeros(1,length(filteredData),1);
 pozicija = zeros(length(filteredData),1); %po drugi integraciji pa dobim pozicijo
 pozicija_raw = zeros(length(filteredData),1);
+
+%IIR filter
+[b, a] = butter(2, 0.05, 'low');
+
+%ini bufferja
+bufferInput = zeros(1, 2, 1);
+bufferOutput = zeros(1, 2, 1);
+b_len = 2;
 
 %èasovni interval
 %t = 0.01; %fastest samsung
@@ -229,6 +241,33 @@ zadetekMejeSlike = 0;
 %iterator (real-time simulator)
 for i=1:data_length
     
+    %-----------------------
+    %IIR filtriranje - begin
+    %-----------------------
+    if(i > 2)
+        if(abs(source(i)) < 1)
+            %filtriranje - uporabim prenosno funkcijo
+            drift(i) = b(1)*source(i) + b(2)*bufferInput(2) + b(3)*bufferInput(1) - a(2)*bufferOutput(2) - a(3)*bufferOutput(1);            
+        else
+            drift(i) = 0;
+        end;
+    else
+        drift(i) = 0;
+    end
+    
+    %dam v buffer
+    bufferInput(1) = bufferInput(2);
+    bufferInput(2) = source(i);
+    bufferOutput(1) = bufferOutput(2);
+    bufferOutput(2) = drift(i);
+    
+    %drift odštejem od signala pospeška
+    filteredData(i) = source(i) - drift(i);        
+    
+    %---------------------
+    %IIR filtriranje - end
+    %---------------------
+    
     %filtering linear acceleration
     if(i-1>0)
         filteredData(i) = Filtering(source, i, 'kalman', {varianca_a, 'pospesek', os_z});      
@@ -242,7 +281,7 @@ for i=1:data_length
     %}
     
     %popravek filtriranja
-    [filteredData(i) firstRun_filtriranjePospeska] = Popravek_pospeska(filteredData, i, prag_pospesek, firstRun_filtriranjePospeska );
+    %[filteredData(i) firstRun_filtriranjePospeska] = Popravek_pospeska(filteredData, i, prag_pospesek, firstRun_filtriranjePospeska );
     
     %%{
     test = filteredData(i)
@@ -260,7 +299,7 @@ for i=1:data_length
             i
         end
         
-        %filtriranje nizkih frekvenc
+        %filtriranje nizkih vrednosti
         if abs(hitrost_raw(i)-popravek_hitrosti_num) < prag_filtriranja_niz_frek
             hitrost(i) = popravek_hitrosti_num;
         else
