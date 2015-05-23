@@ -15,18 +15,6 @@
 %data = csvread('../../data/asus_triangle_-1+05+05.csv');
 %data = csvread('../../data/zacetek_vertikala.csv');
 
-%data = csvread('../../data/asus-1+05+05.csv');
-    %data = csvread('../../data/asus_pol_test.csv');
-%data = csvread('../../data/asus_L_test.csv'); %-1+05+u05+05-u05
-%data = csvread('../../data/asus_dvojnitrikotnik05.csv');
-%data = csvread('../../data/asus_factory_2.csv');
-%data = csvread('../../data/asus_+1-1+1-1.csv');
-%data = csvread('../../data/asus_hitro_levo_desno.csv');
-%data = csvread('../../data/asus_hitro-1+1_2.csv');
-%data = csvread('../../data/lastTest.csv');
-%data = csvread('../../data/hitro_in_posasi.csv');
-%data = csvread('../../data/hitro_in_posasi_2.csv');
-
 %data = csvread('../../data/asus_data.csv');
 
 %kratki premiki
@@ -55,10 +43,7 @@
 %data = csvread('../../data/acc2.csv');
 %data = csvread('../../data/acc3.csv');
 %data = csvread('../../data/acc4.csv');
-data = csvread('../../data/acc6.csv');
-
-data = csvread('../../data/s5_mini_1.csv');
-data = csvread('../../data/s5_mini_2.csv');
+%data = csvread('../../data/acc6.csv');
 
 %data = csvread('../../data/acc8.csv');
 
@@ -118,6 +103,22 @@ data = csvread('../../data/s5_mini_2.csv');
 %data = csvread('../../data/asus_z_14.csv') %Z
 %data = csvread('../../data/asus_z_15.csv') %Z
 
+%data = csvread('../../data/asus_hitro_levo_desno.csv');
+%data = csvread('../../data/asus_hitro-1+1_2.csv');
+
+%data = csvread('../../data/asus-1+05+05.csv');
+%data = csvread('../../data/asus_pol_test.csv');
+%data = csvread('../../data/asus_L_test.csv'); %-1+05+u05+05-u05
+%data = csvread('../../data/asus_dvojnitrikotnik05.csv');
+%data = csvread('../../data/asus_factory_2.csv');
+%data = csvread('../../data/asus_+1-1+1-1.csv');
+%data = csvread('../../data/lastTest.csv');
+%data = csvread('../../data/hitro_in_posasi.csv');
+%data = csvread('../../data/hitro_in_posasi_2.csv');
+
+%data = csvread('../../data/s5_mini_1.csv');
+%data = csvread('../../data/s5_mini_2.csv');
+data = csvread('../../data/nexus_7_l_1.csv');
 
 clear pospesek_raw;
 clear pospesek;
@@ -209,6 +210,8 @@ prag_filtriranja_niz_frek = 0.04;
 global popravek_hitrosti_num;
 
 %inicializacija
+filteredDataWithoutIIR = source;
+sourceWithIIR = source;
 filteredData = source;
 clear Filtering;
 clear Filter_SimpleKalman;
@@ -217,11 +220,13 @@ clear Filter_SimpleKalman;
 drift = zeros(1,length(source),1);
 hitrost = zeros(1,length(filteredData),1); %po prvi itegraciji dobim hitrost
 hitrost_raw = zeros(1,length(filteredData),1);
+hitrost_raw_without_IIR = zeros(1,length(source),1);
+hitrost_raw_with_IIR = zeros(1,length(source),1);
 pozicija = zeros(length(filteredData),1); %po drugi integraciji pa dobim pozicijo
 pozicija_raw = zeros(length(filteredData),1);
 
 %IIR filter
-[b, a] = butter(2, 0.05, 'low');
+[b, a] = butter(2, 0.5, 'low');
 
 %ini bufferja
 bufferInput = zeros(1, 2, 1);
@@ -245,7 +250,7 @@ for i=1:data_length
     %IIR filtriranje - begin
     %-----------------------
     if(i > 2)
-        if(abs(source(i)) < 1)
+        if(abs(source(i)) < 0.5)
             %filtriranje - uporabim prenosno funkcijo
             drift(i) = b(1)*source(i) + b(2)*bufferInput(2) + b(3)*bufferInput(1) - a(2)*bufferOutput(2) - a(3)*bufferOutput(1);            
         else
@@ -262,7 +267,7 @@ for i=1:data_length
     bufferOutput(2) = drift(i);
     
     %drift odštejem od signala pospeška
-    filteredData(i) = source(i) - drift(i);        
+    sourceWithIIR(i) = source(i) - drift(i);        
     
     %---------------------
     %IIR filtriranje - end
@@ -270,34 +275,32 @@ for i=1:data_length
     
     %filtering linear acceleration
     if(i-1>0)
-        filteredData(i) = Filtering(source, i, 'kalman', {varianca_a, 'pospesek', os_z});      
+        filteredData(i) = Filtering(sourceWithIIR, i, 'kalman', {varianca_a, 'pospesek', os_z});      
     else
         filteredData(i) = 0;
     end
     
-    %{
-    test = filteredData(i)
-    test
-    %}
+    if(i-1>0)
+        filteredDataWithoutIIR(i) = Filtering(source, i, 'kalman', {varianca_a, 'pospesek', os_z});      
+    else
+        filteredDataWithoutIIR(i) = 0;
+    end
     
     %popravek filtriranja
     %[filteredData(i) firstRun_filtriranjePospeska] = Popravek_pospeska(filteredData, i, prag_pospesek, firstRun_filtriranjePospeska );
     
-    %%{
-    test = filteredData(i)
-    if(i>=220)
-        i
+    %integracija - hitrost - (glede na IIR)
+    if(i-1>0)
+        hitrost_raw_without_IIR(i) = hitrost_raw_without_IIR(i-1) + Integration_step(source,i,freq,'trapez');
+        hitrost_raw_with_IIR(i) = hitrost_raw_with_IIR(i-1) + Integration_step(sourceWithIIR,i,freq,'trapez');
+    else
+        hitrost_raw_without_IIR(i) = 0;
+        hitrost_raw_with_IIR(i) = 0;
     end
-    %}
     
     %integracija - hitrost
     if(i-1>0)
-        hitrost_raw(i) = hitrost_raw(i-1) + Integration_step(filteredData,i,freq,'trapez');
-        
-        i
-        if(i>400)
-            i
-        end
+        hitrost_raw(i) = hitrost_raw(i-1) + Integration_step(sourceWithIIR,i,freq,'trapez');
         
         %filtriranje nizkih vrednosti
         if abs(hitrost_raw(i)-popravek_hitrosti_num) < prag_filtriranja_niz_frek
@@ -311,8 +314,9 @@ for i=1:data_length
         hitrost_raw(i) = 0;
         hitrost(i) = 0;
     end
+    
     %popravek filtriranja hitrosti
-    [nova_hitrost fistRun_hitrost iteracija_gibanja zadetekMejeSlike] =  Popravek_hitrosti(filteredData, hitrost, hitrost_raw, i, fistRun_hitrost, iteracija_gibanja, zadetekMejeSlike);
+    [nova_hitrost fistRun_hitrost iteracija_gibanja zadetekMejeSlike] =  Popravek_hitrosti(sourceWithIIR, hitrost, hitrost_raw, i, fistRun_hitrost, iteracija_gibanja, zadetekMejeSlike);
     hitrost(i) = nova_hitrost;
 
     %integracija - pozicija
@@ -373,25 +377,40 @@ x = 1:data_length;
 %pobrišem grafe
 clf
 
-subplot(3,1,1);
+subplot(4,1,1);
 plot(x, source, 'color', 'red');
 hold on;
-plot(x, filteredData, 'color', 'blue');
-legend('originalni podatki pospeška','filtrirani podatki pospeška');
+plot(x, filteredDataWithoutIIR, 'color', 'blue');
+plot(x, filteredData, 'color', 'green');
+legend('originalni podatki pospeška','filtrirani podatki pospeška (kalman)','filtrirani podatki pospeška (IIR + kalman)');
+grid on
 hold off;
 
 %hitrost
-subplot(3,1,2);
+subplot(4,1,2);
+hold on;
+plot(x, hitrost_raw_without_IIR, 'color', 'red');
+plot(x, hitrost_raw_with_IIR, 'color', 'blue');
+legend('Hitrost iz pospeška filtriranega s Kalman filtrom','Hitrost iz pospeška filtriranega z IIR + Kalman filtrom');
+%ylim([-2 2])
+ylim([-1.5 1.5])
+grid on
+hold off;
+
+%hitrost
+subplot(4,1,3);
 %plot(x, hitrost_raw, 'color', 'red');
 hold on;
 plot(x, hitrost_raw, 'color', 'red');
 plot(x, hitrost, 'color', 'blue');
-legend('hitrost NE-filtrirana','hitrost filtrirana');
+legend('hitrost brez apliciranih pravil (pospešek: IIR + kalman)','hitrost z apliciranimi pravili (pospešek: IIR + kalman)');
 %ylim([-2 2])
 ylim([-1.5 1.5])
+grid on
 hold off;
 
 %pozicija
-subplot(3,1,3);
+subplot(4,1,4);
 plot(x, pozicija, 'color', 'blue');
 legend('pozicija (m)');
+grid on

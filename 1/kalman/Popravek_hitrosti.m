@@ -6,16 +6,18 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
     global popravek_hitrosti_num;
     global os_z;
     persistent pragPonavljanja;
+    persistent max_hitrosti_pri_enem_premiku;
     
     pragPonavljanja = 20;
     
-    pragPonavljanja_priNicli = 25;
+    pragPonavljanja_priNicli = 40;
     
     if firstRun == 1
         ponavljajoca_vrednost = 0;
         st_ponavljanja = 0;
         popravek_hitrosti_num = 0;
         predznak = 1;
+        max_hitrosti_pri_enem_premiku = 0;
         
         firstRun_os_z = 1;
         
@@ -29,11 +31,19 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
     %rezultat v primeru da ne pride do filtriranja
     nova_vrednost = vhodni_podatek;
     
+    if (iteracija_gibanja == 1)
+        max_hitrosti_pri_enem_premiku = 0;
+    end;
+    
+    if(i == 750)
+        test = 1;
+    end;
+    
     %preverim ali je na voljo nova ponavljajoèa vrednost    
     %if abs(vhodni_podatek - ponavljajoca_vrednost) < 0.0001
     %povišal sem mejo obravnavanja enakosti, saj na taè naèin dobim enakost med vrednostimi, ki se malo razlikujejo
-        %preverjanje (za ALI) dodano zaradi težave z detekcijo ponavljajoèe vrednosti ob prehodu v obmoèje nizkih frekvenc
-    if ((abs(vhodni_podatek - ponavljajoca_vrednost) < 0.0005) || (vhodni_podatek==0 && data_raw(i)<0.04 && abs(data_raw(i) - ponavljajoca_vrednost) < 0.0005))
+        %preverjanje (za ALI) dodano zaradi težave z detekcijo ponavljajoèe vrednosti ob prehodu v obmoèje nizkih vrednosti
+    if ((abs(vhodni_podatek - ponavljajoca_vrednost) < 0.0008) || (vhodni_podatek==0 && data_raw(i)<0.04 && abs(data_raw(i) - ponavljajoca_vrednost) < 0.0005))
         %najdena ponavljajoèa vrednost (imamo konstantno hitrost - torej naprava miruje)
         
         %s tem omogoèim višji prag iskanja enakosti
@@ -41,14 +51,12 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
         
         st_ponavljanja = st_ponavljanja + 1;
         
-        if(i>=625)
-           i
-           i
-        end
-        
-        %preverim prag popnavljanja. Prog ponavljanja v primeru, da so
+        %preverim prag popnavljanja. Prag ponavljanja v primeru, da so
         %vrednosti okoli 0, je nižji
-        if((st_ponavljanja > pragPonavljanja) || (st_ponavljanja > pragPonavljanja_priNicli && abs(ponavljajoca_vrednost)<0.002))
+        %if( (st_ponavljanja > pragPonavljanja) || (st_ponavljanja > pragPonavljanja_priNicli && abs(ponavljajoca_vrednost)<0.002))
+        %if( 1 )
+        if( mozno_preverjanje_ponavljanja( i, max_hitrosti_pri_enem_premiku, ponavljajoca_vrednost, st_ponavljanja, pragPonavljanja, pragPonavljanja_priNicli, predznak ) )        
+            
             %potreben je popravek zaradi napaène konstantne hitrost
             %(popravimo na 0)
             popravek_hitrosti_num = data(i);
@@ -66,8 +74,12 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
                 nova_vrednost = 0;
                 ponavljajoca_vrednost = 0;
             end
+            
+            max_hitrosti_pri_enem_premiku = 0;
         else
             %ni potreben popravek konstantne hitrosti
+            
+            max_hitrosti_pri_enem_premiku = preveri_novo_max_vrednost(max_hitrosti_pri_enem_premiku, nova_vrednost);
             
             iteracija_gibanja = iteracija_gibanja + 1;
             
@@ -81,6 +93,9 @@ function [nova_vrednost, firstRun, iteracija_gibanja, zadetekMejeSlike] = Poprav
         ponavljajoca_vrednost = vhodni_podatek;
         
         iteracija_gibanja = iteracija_gibanja + 1;
+        
+        max_hitrosti_pri_enem_premiku = preveri_novo_max_vrednost(max_hitrosti_pri_enem_premiku, nova_vrednost);
+       
         [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Popravek_hitrosti_aftereffect(pospesek, i, iteracija_gibanja, predznak, vhodni_podatek, data_raw(i), zadetekMejeSlike);
     end
     
