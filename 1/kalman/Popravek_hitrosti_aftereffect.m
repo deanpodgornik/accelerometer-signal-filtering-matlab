@@ -70,7 +70,7 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
         %podatek vrenem nespremenjen
         nova_vrednost = vhodni_podatek;
     else
-        if(i>=1245)
+        if(i>=913)
             i 
             i
         end
@@ -87,9 +87,6 @@ function [nova_vrednost, iteracija_gibanja, predznak, zadetekMejeSlike] = Poprav
         else
             %najprej preverim ali je sprememba smeri upravièena 
             %(vsota pred spremembo smeri mora biti dovolj velika, ker sicer gre za napako filtriranja nizkih frekvenc)
-            
-            i
-            sumPoSpremembiSmeri
             
             if( 0 < sumPoSpremembiSmeri && sumPoSpremembiSmeri < prag_sumPoSpremembiSmeri )
                 %spremembo smeri obravnavam kot napako filtriranja nizkih
