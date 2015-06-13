@@ -115,10 +115,15 @@
 %data = csvread('../../data/lastTest.csv');
 %data = csvread('../../data/hitro_in_posasi.csv');
 %data = csvread('../../data/hitro_in_posasi_2.csv');
+%data = csvread('../../data/acc5.csv');
 
 %data = csvread('../../data/s5_mini_1.csv');
 %data = csvread('../../data/s5_mini_2.csv');
-data = csvread('../../data/nexus_7_l_1.csv');
+%data = csvread('../../data/nexus_7_l_1.csv');
+
+data = csvread('../../data/asus_+1-1+1-1.csv');
+%data = dlmread('../../data/n_podlaga-1+1.csv', ',');
+%data = dlmread('../../data/n_roka-1+1.csv', ',');
 
 clear pospesek_raw;
 clear pospesek;
@@ -226,7 +231,8 @@ pozicija = zeros(length(filteredData),1); %po drugi integraciji pa dobim pozicij
 pozicija_raw = zeros(length(filteredData),1);
 
 %IIR filter
-[b, a] = butter(2, 0.5, 'low');
+%[b, a] = butter(2, 0.0005, 'low'); %DEFAULT MAJHNA FREKVENCA
+[b, a] = butter(2, 0.05, 'low');
 
 %ini bufferja
 bufferInput = zeros(1, 2, 1);
@@ -250,13 +256,18 @@ for i=1:data_length
     %IIR filtriranje - begin
     %-----------------------
     if(i > 2)
+        %filtriranje - uporabim prenosno funkcijo
+        current_drift = b(1)*source(i) + b(2)*bufferInput(2) + b(3)*bufferInput(1) - a(2)*bufferOutput(2) - a(3)*bufferOutput(1);
+        
         if(abs(source(i)) < 0.5)
-            %filtriranje - uporabim prenosno funkcijo
-            drift(i) = b(1)*source(i) + b(2)*bufferInput(2) + b(3)*bufferInput(1) - a(2)*bufferOutput(2) - a(3)*bufferOutput(1);            
+            %apliciram IIR filtriranje
+            drift(i) = current_drift;
         else
+            %brez IIR filtriranja
             drift(i) = 0;
         end;
     else
+        current_drift = 0;
         drift(i) = 0;
     end
     
@@ -264,7 +275,7 @@ for i=1:data_length
     bufferInput(1) = bufferInput(2);
     bufferInput(2) = source(i);
     bufferOutput(1) = bufferOutput(2);
-    bufferOutput(2) = drift(i);
+    bufferOutput(2) = current_drift;
     
     %drift odštejem od signala pospeška
     sourceWithIIR(i) = source(i) - drift(i);        
@@ -291,8 +302,8 @@ for i=1:data_length
     
     %integracija - hitrost - (glede na IIR)
     if(i-1>0)
-        hitrost_raw_without_IIR(i) = hitrost_raw_without_IIR(i-1) + Integration_step(source,i,freq,'trapez');
-        hitrost_raw_with_IIR(i) = hitrost_raw_with_IIR(i-1) + Integration_step(sourceWithIIR,i,freq,'trapez');
+        hitrost_raw_without_IIR(i) = hitrost_raw_without_IIR(i-1) + Integration_step(filteredDataWithoutIIR,i,freq,'trapez');
+        hitrost_raw_with_IIR(i) = hitrost_raw_with_IIR(i-1) + Integration_step(filteredData,i,freq,'trapez');
     else
         hitrost_raw_without_IIR(i) = 0;
         hitrost_raw_with_IIR(i) = 0;
@@ -300,7 +311,7 @@ for i=1:data_length
     
     %integracija - hitrost
     if(i-1>0)
-        hitrost_raw(i) = hitrost_raw(i-1) + Integration_step(sourceWithIIR,i,freq,'trapez');
+        hitrost_raw(i) = hitrost_raw(i-1) + Integration_step(filteredData,i,freq,'trapez');
         
         %filtriranje nizkih vrednosti
         if abs(hitrost_raw(i)-popravek_hitrosti_num) < prag_filtriranja_niz_frek
@@ -316,7 +327,7 @@ for i=1:data_length
     end
     
     %popravek filtriranja hitrosti
-    [nova_hitrost fistRun_hitrost iteracija_gibanja zadetekMejeSlike] =  Popravek_hitrosti(sourceWithIIR, hitrost, hitrost_raw, i, fistRun_hitrost, iteracija_gibanja, zadetekMejeSlike);
+    [nova_hitrost fistRun_hitrost iteracija_gibanja zadetekMejeSlike] =  Popravek_hitrosti(filteredData, hitrost, hitrost_raw, i, fistRun_hitrost, iteracija_gibanja, zadetekMejeSlike);
     hitrost(i) = nova_hitrost;
 
     %integracija - pozicija
@@ -380,9 +391,9 @@ clf
 subplot(4,1,1);
 plot(x, source, 'color', 'red');
 hold on;
-plot(x, filteredDataWithoutIIR, 'color', 'blue');
+plot(x, sourceWithIIR, 'color', 'blue');
 plot(x, filteredData, 'color', 'green');
-legend('originalni podatki pospeška','filtrirani podatki pospeška (kalman)','filtrirani podatki pospeška (IIR + kalman)');
+legend('originalni podatki pospeška','filtrirani podatki pospeška (IIR)','filtrirani podatki pospeška (IIR + kalman)');
 grid on
 hold off;
 
@@ -401,7 +412,7 @@ hold off;
 subplot(4,1,3);
 %plot(x, hitrost_raw, 'color', 'red');
 hold on;
-plot(x, hitrost_raw, 'color', 'red');
+plot(x, hitrost_raw_with_IIR, 'color', 'red');
 plot(x, hitrost, 'color', 'blue');
 legend('hitrost brez apliciranih pravil (pospešek: IIR + kalman)','hitrost z apliciranimi pravili (pospešek: IIR + kalman)');
 %ylim([-2 2])

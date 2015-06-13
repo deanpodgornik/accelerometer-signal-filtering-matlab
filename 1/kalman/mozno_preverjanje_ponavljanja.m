@@ -1,7 +1,7 @@
 function [ rezultat ] = mozno_preverjanje_ponavljanja( i, max_hitrosti_pri_enem_premiku, ponavljajoca_vrednost, st_ponavljanja, pragPonavljanja, pragPonavljanja_priNicli, predznak )
-%MOZNO_PREVERJANJE_PONAVLJANJA Summary of this function goes here
+%MOZNO_PREVERJANJE_PONAVLJANJA
 
-    if(i >= 800)
+    if(i >= 660)
         test = 2;
     end
 
