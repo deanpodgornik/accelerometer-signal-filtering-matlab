@@ -121,8 +121,8 @@
 %data = csvread('../../data/s5_mini_2.csv');
 %data = csvread('../../data/nexus_7_l_1.csv');
 
-%data = csvread('../../data/asus_+1-1+1-1.csv');
-data = dlmread('../../data/n_podlaga-1+1.csv', ',');
+data = csvread('../../data/asus_+1-1+1-1.csv');
+%data = dlmread('../../data/n_podlaga-1+1.csv', ',');
 %data = dlmread('../../data/n_roka-1+1.csv', ',');
 
 clear pospesek_raw;
