@@ -121,8 +121,8 @@
 %data = csvread('../../data/s5_mini_2.csv');
 %data = csvread('../../data/nexus_7_l_1.csv');
 
-%data = csvread('../../data/asus_+1-1+1-1.csv');
-data = dlmread('../../data/n_podlaga-1+1.csv', ',');
+data = csvread('../../data/asus_+1-1+1-1.csv');
+%data = dlmread('../../data/n_podlaga-1+1.csv', ',');
 %data = dlmread('../../data/n_roka-1+1.csv', ',');
 
 clear pospesek_raw;
@@ -227,7 +227,6 @@ hitrost = zeros(1,length(filteredData),1); %po prvi itegraciji dobim hitrost
 hitrost_raw = zeros(1,length(filteredData),1);
 hitrost_raw_without_IIR = zeros(1,length(source),1);
 hitrost_raw_with_IIR = zeros(1,length(source),1);
-hitrost_raw_just_IIR_without_kalman = zeros(1,length(source),1);
 pozicija = zeros(length(filteredData),1); %po drugi integraciji pa dobim pozicijo
 pozicija_raw = zeros(length(filteredData),1);
 
@@ -301,22 +300,29 @@ for i=1:data_length
     %popravek filtriranja
     %[filteredData(i) firstRun_filtriranjePospeska] = Popravek_pospeska(filteredData, i, prag_pospesek, firstRun_filtriranjePospeska );
     
-    %integracija - hitrost - (v demonstracijske namene)
+    %integracija - hitrost - (Filtri: samo IIR)
     if(i-1>0)
         hitrost_raw_without_IIR(i) = hitrost_raw_without_IIR(i-1) + Integration_step(filteredDataWithoutIIR,i,freq,'trapez');
         hitrost_raw_with_IIR(i) = hitrost_raw_with_IIR(i-1) + Integration_step(filteredData,i,freq,'trapez');
-        hitrost_raw_just_IIR_without_kalman(i) = hitrost_raw_just_IIR_without_kalman(i-1) + Integration_step(sourceWithIIR,i,freq,'trapez');
     else
         hitrost_raw_without_IIR(i) = 0;
         hitrost_raw_with_IIR(i) = 0;
-        hitrost_raw_just_IIR_without_kalman(i) = 0;
+    end
+    
+    %integracija - hitrost - (Filtri: samo kalman)
+    if(i-1>0)
+        hitrost_raw_without_IIR(i) = hitrost_raw_without_IIR(i-1) + Integration_step(filteredDataWithoutIIR,i,freq,'trapez');
+        hitrost_raw_with_IIR(i) = hitrost_raw_with_IIR(i-1) + Integration_step(filteredData,i,freq,'trapez');
+    else
+        hitrost_raw_without_IIR(i) = 0;
+        hitrost_raw_with_IIR(i) = 0;
     end
     
     %integracija - hitrost (IIR + Kalman)
     if(i-1>0)
         hitrost_raw(i) = hitrost_raw(i-1) + Integration_step(filteredData,i,freq,'trapez');
         
-        %odstranjevanje nizkih vrednostii
+        %filtriranje nizkih vrednosti
         if abs(hitrost_raw(i)-popravek_hitrosti_num) < prag_filtriranja_niz_frek
             hitrost(i) = popravek_hitrosti_num;
         else
@@ -404,9 +410,8 @@ hold off;
 subplot(4,1,2);
 hold on;
 plot(x, hitrost_raw_without_IIR, 'color', 'red');
-plot(x, hitrost_raw_just_IIR_without_kalman, 'color', 'green');
 plot(x, hitrost_raw_with_IIR, 'color', 'blue');
-legend('Hitrost iz pospeška filtriranega s Kalman filtrom', 'Hitrost iz pospeška filtriranega z IIR filtrom', 'Hitrost iz pospeška filtriranega z IIR + Kalman filtrom');
+legend('Hitrost iz pospeška filtriranega s Kalman filtrom','Hitrost iz pospeška filtriranega z IIR + Kalman filtrom');
 %ylim([-2 2])
 ylim([-1.5 1.5])
 grid on
