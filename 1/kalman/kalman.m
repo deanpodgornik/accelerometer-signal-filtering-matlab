@@ -233,7 +233,7 @@ pozicija_raw = zeros(length(filteredData),1);
 
 %IIR filter
 %[b, a] = butter(2, 0.0005, 'low'); %DEFAULT MAJHNA FREKVENCA
-[b, a] = butter(2, 0.05, 'low');
+[b, a] = butter(2, 0.1, 'low');
 
 %ini bufferja
 bufferInput = zeros(1, 2, 1);
