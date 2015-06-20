@@ -1,7 +1,9 @@
 %preberem csv datoteko
 %data1 = dlmread('./Sensor_record_20150428_205937_noHdr.csv', ';');
 %data1 = dlmread('./nexus7_1.csv', ',');
-data1 = dlmread('./nexus7_2_drsenje.csv', ',');
+%data1 = dlmread('./nexus7_2_drsenje.csv', ',');
+%data1 = dlmread('./n_podlaga-1+1.csv', ',');
+data1 = dlmread('./n_roka-1+1.csv', ',');
 
 data=data1(:,1:3);
 
@@ -33,7 +35,8 @@ t = 0.005; %fastest asus
 freq = 1 / t; %200Hz
 
 %IIR filter
-[b, a] = butter(2, 0.05, 'low');
+%[b, a] = butter(2, 0.05, 'low');
+[b, a] = butter(2, 0.0005, 'low');
 
 %ini bufferja
 bufferInput = zeros(1, 2, 1);
@@ -47,13 +50,15 @@ for i=1:data_length
     %IIR filtriranje - begin
     %-----------------------
     if(i > 2)
+        current_drift = b(1)*source(i) + b(2)*bufferInput(2) + b(3)*bufferInput(1) - a(2)*bufferOutput(2) - a(3)*bufferOutput(1);
         if(abs(source(i)) < 1)
             %filtriranje - uporabim prenosno funkcijo
-            drift(i) = b(1)*source(i) + b(2)*bufferInput(2) + b(3)*bufferInput(1) - a(2)*bufferOutput(2) - a(3)*bufferOutput(1);            
+            drift(i) = current_drift;
         else
             drift(i) = 0;
         end;
     else
+        current_drift = 0;
         drift(i) = 0;
     end
     
@@ -61,7 +66,7 @@ for i=1:data_length
     bufferInput(1) = bufferInput(2);
     bufferInput(2) = source(i);
     bufferOutput(1) = bufferOutput(2);
-    bufferOutput(2) = drift(i);
+    bufferOutput(2) = current_drift;
     
     %drift odštejem od signala pospeška
     filteredData(i) = source(i) - drift(i);        

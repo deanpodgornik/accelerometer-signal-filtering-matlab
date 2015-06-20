@@ -15,12 +15,6 @@ function [nova_vrednost firstRun] = Popravek_pospeska( data, i, prag_pospesek, f
     else
         iniStIteracijNeupostevanja = 200;
     end
-    
-    %{
-    if i>666
-        i
-    end
-    %}
         
     if firstRun == 1
         stIteracijNeupostevanja = 0;
@@ -87,6 +81,6 @@ function [nova_vrednost firstRun] = Popravek_pospeska( data, i, prag_pospesek, f
         %obmoèje upoštevanja filtriranja nizkih frekvenc
         nova_vrednost = filtriranaVrednost;
     end
-    
+
 end
 

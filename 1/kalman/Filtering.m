@@ -25,6 +25,7 @@ function output_data = Filtering( input_data, i, filter_type, parameters )
                 if(os_z)
                     Q_a = 0.008;
                 else
+                    %Q_a = 0.08;
                     Q_a = 0.08;
                 end
                 
