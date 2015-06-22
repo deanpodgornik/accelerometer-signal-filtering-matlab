@@ -123,9 +123,9 @@
 
 %data = csvread('../../data/asus_+1-1+1-1.csv');
 %data = dlmread('../../data/n_podlaga-1+1.csv', ',');
-data = dlmread('../../data/n_roka-1+1.csv', ',');
+%data = dlmread('../../data/n_roka-1+1.csv', ',');
 
-%data = csvread('../../data/real_test_v1.csv');
+data = csvread('../../data/real_test_v1.csv');
 
 clear pospesek_raw;
 clear pospesek;
@@ -258,27 +258,35 @@ for i=1:data_length
     %-----------------------
     %IIR filtriranje - begin
     %-----------------------
-    if(i > 2)
-        %filtriranje - uporabim prenosno funkcijo
-        current_drift = b(1)*source(i) + b(2)*bufferInput(2) + b(3)*bufferInput(1) - a(2)*bufferOutput(2) - a(3)*bufferOutput(1);
-        
+    if(i > 2)        
         if(abs(source(i)) < 0.5)
+            %V FAZI MIROVANJA 
+            
+            %filtriranje - uporabim prenosno funkcijo            
+            current_drift = b(1)*source(i) + b(2)*bufferInput(2) + b(3)*bufferInput(1) - a(2)*bufferOutput(2) - a(3)*bufferOutput(1);
+        
             %apliciram IIR filtriranje
             drift(i) = current_drift;
+            
+            %dam v buffer
+            bufferInput(1) = bufferInput(2);
+            bufferInput(2) = source(i);
+            bufferOutput(1) = bufferOutput(2);
+            bufferOutput(2) = current_drift;
         else
-            %brez IIR filtriranja
+            %V FAZI PREMIKANJA: IIR filtriranja ne apliciram
             drift(i) = 0;
         end;
     else
         current_drift = 0;
         drift(i) = 0;
+        
+        %dam v buffer
+        bufferInput(1) = bufferInput(2);
+        bufferInput(2) = source(i);
+        bufferOutput(1) = bufferOutput(2);
+        bufferOutput(2) = current_drift;
     end
-    
-    %dam v buffer
-    bufferInput(1) = bufferInput(2);
-    bufferInput(2) = source(i);
-    bufferOutput(1) = bufferOutput(2);
-    bufferOutput(2) = current_drift;
     
     %drift odštejem od signala pospeška
     sourceWithIIR(i) = source(i) - drift(i);        
