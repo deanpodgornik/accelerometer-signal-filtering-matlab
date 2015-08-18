@@ -15,18 +15,6 @@
 %data = csvread('../../data/asus_triangle_-1+05+05.csv');
 %data = csvread('../../data/zacetek_vertikala.csv');
 
-%data = csvread('../../data/asus-1+05+05.csv');
-    %data = csvread('../../data/asus_pol_test.csv');
-%data = csvread('../../data/asus_L_test.csv'); %-1+05+u05+05-u05
-%data = csvread('../../data/asus_dvojnitrikotnik05.csv');
-%data = csvread('../../data/asus_factory_2.csv');
-%data = csvread('../../data/asus_+1-1+1-1.csv');
-%data = csvread('../../data/asus_hitro_levo_desno.csv');
-%data = csvread('../../data/asus_hitro-1+1_2.csv');
-%data = csvread('../../data/lastTest.csv');
-%data = csvread('../../data/hitro_in_posasi.csv');
-%data = csvread('../../data/hitro_in_posasi_2.csv');
-
 %data = csvread('../../data/asus_data.csv');
 
 %kratki premiki
@@ -57,8 +45,7 @@
 %data = csvread('../../data/acc4.csv');
 %data = csvread('../../data/acc6.csv');
 
-dataTmp = csvread('../../data/acc8.csv');
-data = dataTmp(150:350)';
+%data = csvread('../../data/acc8.csv');
 
 %data = csvread('../../data/acc5.csv');
 %data = csvread('../../data/acc7.csv');
@@ -115,6 +102,28 @@ data = dataTmp(150:350)';
 %data = csvread('../../data/asus_z_13.csv') %Z
 %data = csvread('../../data/asus_z_14.csv') %Z
 %data = csvread('../../data/asus_z_15.csv') %Z
+
+%data = csvread('../../data/asus_hitro_levo_desno.csv');
+%data = csvread('../../data/asus_hitro-1+1_2.csv');
+
+%data = csvread('../../data/asus-1+05+05.csv');
+%data = csvread('../../data/asus_pol_test.csv');
+%data = csvread('../../data/asus_L_test.csv'); %-1+05+u05+05-u05
+%data = csvread('../../data/asus_dvojnitrikotnik05.csv');
+%data = csvread('../../data/asus_factory_2.csv');
+%data = csvread('../../data/asus_+1-1+1-1.csv');
+%data = csvread('../../data/lastTest.csv');
+%data = csvread('../../data/hitro_in_posasi.csv');
+%data = csvread('../../data/hitro_in_posasi_2.csv');
+%data = csvread('../../data/acc5.csv');
+
+%data = csvread('../../data/s5_mini_1.csv');
+%data = csvread('../../data/s5_mini_2.csv');
+data = csvread('../../data/nexus_7_l_1.csv');
+
+%data = csvread('../../data/asus_+1-1+1-1.csv');
+%data = dlmread('../../data/n_podlaga-1+1.csv', ',');
+%data = dlmread('../../data/n_roka-1+1.csv', ',');
 
 
 clear pospesek_raw;
@@ -208,14 +217,25 @@ global popravek_hitrosti_num;
 
 %inicializacija
 filteredData = source;
+sourceWithIIR = source;
 clear Filtering;
 clear Filter_SimpleKalman;
+
+%IIR filter
+%[b, a] = butter(2, 0.0005, 'low'); %DEFAULT MAJHNA FREKVENCA
+[b, a] = butter(2, 0.1, 'low');
+
+%ini bufferja
+bufferInput = zeros(1, 2, 1);
+bufferOutput = zeros(1, 2, 1);
+b_len = 2;
 
 %inicializacija dvojne integracije (zaèetni pogoji: hitrost = 0 in pozicija = 0)
 hitrost = zeros(1,length(filteredData),1); %po prvi itegraciji dobim hitrost
 hitrost_raw = zeros(1,length(filteredData),1);
 pozicija = zeros(length(filteredData),1); %po drugi integraciji pa dobim pozicijo
 pozicija_raw = zeros(length(filteredData),1);
+drift = zeros(1,length(source),1);
 
 %èasovni interval
 %t = 0.01; %fastest samsung
@@ -230,9 +250,45 @@ zadetekMejeSlike = 0;
 %iterator (real-time simulator)
 for i=1:data_length
     
+    %-----------------------
+    %IIR filtriranje - begin
+    %-----------------------
+    if(i > 2)        
+        if(abs(source(i)) < 0.5)
+            %V FAZI MIROVANJA 
+            
+            %filtriranje - uporabim prenosno funkcijo            
+            current_drift = b(1)*source(i) + b(2)*bufferInput(2) + b(3)*bufferInput(1) - a(2)*bufferOutput(2) - a(3)*bufferOutput(1);
+        
+            %apliciram IIR filtriranje
+            drift(i) = current_drift;
+            
+            %dam v buffer
+            bufferInput(1) = bufferInput(2);
+            bufferInput(2) = source(i);
+            bufferOutput(1) = bufferOutput(2);
+            bufferOutput(2) = current_drift;
+        else
+            %V FAZI PREMIKANJA: IIR filtriranja ne apliciram
+            drift(i) = 0;
+        end;
+    else
+        current_drift = 0;
+        drift(i) = 0;
+        
+        %dam v buffer
+        bufferInput(1) = bufferInput(2);
+        bufferInput(2) = source(i);
+        bufferOutput(1) = bufferOutput(2);
+        bufferOutput(2) = current_drift;
+    end
+    
+    %drift odštejem od signala pospeška
+    sourceWithIIR(i) = source(i) - drift(i); 
+    
     %filtering linear acceleration
     if(i-1>0)
-        filteredData(i) = Filtering(source, i, 'kalman', {varianca_a, 'pospesek', os_z});      
+        filteredData(i) = Filtering(sourceWithIIR, i, 'kalman', {varianca_a, 'pospesek', os_z});      
     else
         filteredData(i) = 0;
     end
@@ -344,8 +400,8 @@ plot(x, hitrost_raw, 'color', 'red');
 plot(x, hitrost, 'color', 'blue');
 legend('Originalen signal hitrosti','Filtriran signal hitrosti');
 %ylim([-2 2])
-xlim([0 1])
-ylim([-0.3 0.3])
+%xlim([0 1])
+%ylim([-0.3 0.3])
 xlabel('Èas (s)');
 ylabel('Hitrost (m/s)');
 hold off;
